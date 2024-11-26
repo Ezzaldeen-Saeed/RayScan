@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "36497325889",
+    "project_id": "testnav-5b757",
+    "storage_bucket": "testnav-5b757.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:36497325889:android:25bca1587ecb117f95abc0",
+        "android_client_info": {
+          "package_name": "com.example.testnav"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDU1wiMUvxAQlWdeMdVMBkWCIT57jLlBAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
