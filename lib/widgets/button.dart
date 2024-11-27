@@ -18,3 +18,38 @@ class CustomButton extends StatelessWidget {
             )));
   }
 }
+
+class CustomButtonIcon extends StatelessWidget {
+  const CustomButtonIcon(
+      {super.key,
+      required this.icon,
+      required this.buttonColor,
+      this.onPressed,
+      required this.radius});
+
+  final IconData icon;
+  final Color buttonColor;
+  final double radius;
+  final void Function()? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+        width: radius,
+        height: radius,
+        child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: buttonColor, // Set the button color
+              shape: RoundedRectangleBorder(
+                borderRadius:
+                    BorderRadius.circular(60), // Set max border radius
+              ),
+            ),
+            onPressed: onPressed,
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: radius - radius * 0.3,
+            )));
+  }
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/utils/utility.dart';
@@ -21,17 +22,18 @@ class _AddPatientViewState extends State<AddPatientView> {
     // Access the global controller
     return Scaffold(
       backgroundColor: currentBG,
-      body: Align(
-        alignment: Alignment.center,
-        child: ListView(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 20),
-            CustomButton(
-              label: "Sign Out",
-              onPressed: () async {
-                signupLogin.signOut(context);
-              },
+            CustomButtonIcon(
+              radius: 200,
+              buttonColor: Colors.blue,
+              icon: Icons.add_a_photo_outlined,
+              onPressed: () => context.go('/addPatient/imageUpload_subview'),
             ),
+            const SizedBox(height: 20),
+            Text("Upload Patient Images", style: TextStyle(fontSize: 30)),
           ],
         ),
       ),

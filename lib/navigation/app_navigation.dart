@@ -11,14 +11,25 @@ import 'package:testnav/views/signup_login/login_view.dart';
 import 'package:testnav/views/signup_login/signup_view.dart';
 import 'package:testnav/views/wrapper/main_wrapper.dart';
 
+import '../views/addPatient/imageUploadPage_view.dart';
+
+// Pages Names
+//  - /login
+//  - /signup
+//  - /home
+//  - /search
+//  - /profile
+//  - /addPatient
+//  - /addPatient/imageUpload_subview
+
 class AppNavigation {
   AppNavigation._();
 
   static late String initial;
-
   static Future<void> setInitial() async {
     bool isLoggedIn = await hs.isLoggedIn();
-    initial = isLoggedIn ? "/home" : "/login";
+    // initial = isLoggedIn ? "/home" : "/login";
+    initial = "/home";
     log("Since User Is Logged In Initial Route: $initial");
   }
 
@@ -72,26 +83,25 @@ class AppNavigation {
                 name: "Add Patient",
                 builder: (BuildContext context, GoRouterState state) =>
                     const AddPatientView(),
-                // When adding the Pages Inside the Home
-                // routes: [
-                //   GoRoute(
-                //     path: "subSetting",
-                //     name: "subSetting",
-                //     pageBuilder: (context, state) {
-                //       return CustomTransitionPage<void>(
-                //         key: state.pageKey,
-                //         child: const SubSettingsView(),
-                //         transitionsBuilder: (
-                //           context,
-                //           animation,
-                //           secondaryAnimation,
-                //           child,
-                //         ) =>
-                //             FadeTransition(opacity: animation, child: child),
-                //       );
-                //     },
-                //   ),
-                // ],
+                routes: [
+                  GoRoute(
+                    path: "imageUpload_subview",
+                    name: "Image Upload Page",
+                    pageBuilder: (context, state) {
+                      return CustomTransitionPage<void>(
+                        key: state.pageKey,
+                        child: ImageUpload_subview(),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) =>
+                            FadeTransition(opacity: animation, child: child),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),
@@ -105,20 +115,6 @@ class AppNavigation {
                 name: "Home",
                 builder: (BuildContext context, GoRouterState state) =>
                     HomeView(),
-                // When adding the Pages Inside the Home
-                // routes: [
-                //   GoRoute(
-                //     path: 'subHome',
-                //     name: 'subHome',
-                //     pageBuilder: (context, state) => CustomTransitionPage<void>(
-                //       key: state.pageKey,
-                //       child: const SubHomeView(),
-                //       transitionsBuilder:
-                //           (context, animation, secondaryAnimation, child) =>
-                //               FadeTransition(opacity: animation, child: child),
-                //     ),
-                //   ),
-                // ],
               ),
             ],
           ),

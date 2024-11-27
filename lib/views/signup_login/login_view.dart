@@ -57,10 +57,8 @@ class _LoginViewState extends State<LoginView> {
               onPressed: () {
                 signupLogin.login(
                   context,
-                  "test@gmail.com",
-                  "test1234",
-                  // _email.text.trim(),
-                  // _password.text.trim(),
+                  _email.text.trim(),
+                  _password.text.trim(),
                 );
               },
             ),

@@ -36,7 +36,6 @@ class SignUpAndLogin{
     if (user != null) {
       log("User Created Succesfully");
       login(context, email, password);
-      context.go('/home');
     }
   }
 
