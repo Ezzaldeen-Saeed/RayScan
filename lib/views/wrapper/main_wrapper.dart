@@ -14,7 +14,7 @@ class MainWrapper extends StatefulWidget {
 }
 
 class _MainWrapperState extends State<MainWrapper> {
-  int selectedIndex = 0;
+  int selectedIndex = 1;
 
   void _goBranch(int index) {
     widget.navigationShell.goBranch(
@@ -31,12 +31,6 @@ class _MainWrapperState extends State<MainWrapper> {
         height: double.infinity,
         child: widget.navigationShell,
       ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            context.push(context.namedLocation('Player'));
-          },
-          backgroundColor: Colors.deepPurpleAccent,
-          child: const Icon(Icons.play_arrow)),
       bottomNavigationBar: SlidingClippedNavBar(
         backgroundColor: Colors.white,
         onButtonPressed: (index) {
@@ -50,12 +44,20 @@ class _MainWrapperState extends State<MainWrapper> {
         selectedIndex: selectedIndex,
         barItems: [
           BarItem(
+            icon: Icons.person_add,
+            title: 'Add Patient',
+          ),
+          BarItem(
             icon: Icons.home,
             title: 'Home',
           ),
           BarItem(
-            icon: Icons.settings,
-            title: 'Settings',
+            icon: Icons.search,
+            title: 'Search',
+          ),
+          BarItem(
+            icon: Icons.account_circle,
+            title: 'Profile',
           ),
         ],
       ),

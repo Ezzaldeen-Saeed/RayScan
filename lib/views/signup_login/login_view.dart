@@ -1,17 +1,17 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:testnav/utils/utility.dart';
 import 'package:testnav/widgets/button.dart';
 import 'package:testnav/widgets/textfield.dart';
-import 'package:flutter/material.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-
+class _LoginViewState extends State<LoginView> {
   final _email = TextEditingController();
   final _password = TextEditingController();
 
@@ -57,20 +57,27 @@ class _LoginScreenState extends State<LoginScreen> {
               onPressed: () {
                 signupLogin.login(
                   context,
-                  _email.text.trim(),
-                  _password.text.trim(),
+                  "test@gmail.com",
+                  "test1234",
+                  // _email.text.trim(),
+                  // _password.text.trim(),
                 );
               },
             ),
             const SizedBox(height: 5),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Text("Already have an account? "),
-              InkWell(
-                onTap: () => UtilityManager.goToSignup(context),
-                child:
-                    const Text("Signup", style: TextStyle(color: Colors.red)),
-              )
-            ]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Already have an account? "),
+                InkWell(
+                  onTap: () => context.go('/signup'),
+                  child: const Text(
+                    "Signup",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
             const Spacer()
           ],
         ),

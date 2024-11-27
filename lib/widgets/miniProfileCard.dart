@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-
 import 'package:testnav/main.dart';
-
-import '../auth/auth_service.dart';
 
 class miniProfileCard extends StatelessWidget {
   const miniProfileCard({super.key, this.onPressed});
@@ -113,16 +110,14 @@ class miniProfileCard extends StatelessWidget {
 
   Future<String> getUserData(String type) async {
     var value = await hs.getUserData();
-    if (value != null) {
-      switch (type) {
-        case 'userName':
-          return value['userName'] ?? 'No userName';
-        case 'userEmail':
-          return value['userEmail'] ?? 'No userEmail';
-        case 'profileImagePath':
-          return value['profileImagePath'] ??
-              'https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small/profile-icon-design-free-vector.jpg';
-      }
+    switch (type) {
+      case 'userName':
+        return value['userName'] ?? 'No userName';
+      case 'userEmail':
+        return value['userEmail'] ?? 'No userEmail';
+      case 'profileImagePath':
+        return value['profileImagePath'] ??
+            'https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small/profile-icon-design-free-vector.jpg';
     }
     return 'Error';
   }

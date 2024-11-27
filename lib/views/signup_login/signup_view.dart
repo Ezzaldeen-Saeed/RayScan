@@ -1,20 +1,17 @@
-import 'dart:developer';
-
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:testnav/utils/utility.dart';
 import 'package:testnav/widgets/button.dart';
 import 'package:testnav/widgets/textfield.dart';
-import 'package:flutter/material.dart';
 
-import '../../utils/utility.dart';
-
-class SignupScreen extends StatefulWidget {
-  const SignupScreen({super.key});
-
+class SignupView extends StatefulWidget {
+  const SignupView({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  State<SignupView> createState() => _SignupViewState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupViewState extends State<SignupView> {
   final _name = TextEditingController();
   final _email = TextEditingController();
   final _password = TextEditingController();
@@ -77,13 +74,19 @@ class _SignupScreenState extends State<SignupScreen> {
               },
             ),
             const SizedBox(height: 5),
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Text("Already have an account? "),
-              InkWell(
-                onTap: () => UtilityManager.goToLogin(context),
-                child: const Text("Login", style: TextStyle(color: Colors.red)),
-              )
-            ]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text("Already have an account? "),
+                InkWell(
+                  onTap: () => context.go('/login'),
+                  child: const Text(
+                    "Login",
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              ],
+            ),
             const Spacer()
           ],
         ),

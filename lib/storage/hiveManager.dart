@@ -2,8 +2,7 @@ import 'dart:developer';
 
 import 'package:hive/hive.dart';
 import 'package:testnav/main.dart';
-
-import '../utils/Utility.dart';
+import 'package:testnav/utils/Utility.dart';
 
 class HiveService {
   final String _boxName = 'myBox';

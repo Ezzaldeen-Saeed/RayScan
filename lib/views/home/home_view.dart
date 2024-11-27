@@ -1,51 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:testnav/auth/auth_service.dart';
+import 'package:testnav/main.dart';
+import 'package:testnav/utils/Utility.dart';
+import 'package:testnav/widgets/button.dart';
+import 'package:testnav/widgets/miniPatientCard.dart';
+import 'package:testnav/widgets/miniProfileCard.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+class HomeView extends StatelessWidget {
+  final AuthService auth = AuthService();
 
-  @override
-  State<HomeView> createState() => _HomeViewState();
-}
+  SignUpAndLogin signupLogin = SignUpAndLogin();
 
-class _HomeViewState extends State<HomeView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.redAccent,
-        title: const Text("Home"),
-      ),
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      backgroundColor: currentBG,
+      body: Align(
+        alignment: Alignment.center,
+        child: ListView(
           children: [
-            const Icon(
-              Icons.home,
-              color: Colors.red,
-              size: 100,
-            ),
-            const SizedBox(
-              height: 8,
-            ),
-            const Text(
-              "Home",
-              style: TextStyle(fontSize: 30),
-            ),
-            const SizedBox(
-              height: 12,
-            ),
-            MaterialButton(
-              color: Colors.redAccent,
-              onPressed: () {
-                context.goNamed("subHome");
+            miniProfileCard(onPressed: () {
+              context.goNamed("Profile");
+            }),
+            const SizedBox(height: 20),
+            miniPatientCard(),
+            const SizedBox(height: 20),
+            CustomButton(
+              label: "Sign Out",
+              onPressed: () async {
+                signupLogin.signOut(context);
               },
-              child: const Text(
-                "Navigate To Sub Home View",
-                style: TextStyle(color: Colors.white),
-              ),
             ),
           ],
         ),
@@ -53,3 +38,4 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 }
+

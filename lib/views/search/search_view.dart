@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:testnav/auth/auth_service.dart';
-import 'package:testnav/widgets/button.dart';
-import 'package:testnav/utils/utility.dart';
-import 'package:testnav/widgets/BottomNavBar.dart';
 import 'package:testnav/main.dart';
+import 'package:testnav/utils/utility.dart';
 
-class ProfileScreen extends StatelessWidget {
+class SearchView extends StatefulWidget {
+  const SearchView({super.key});
+
+  @override
+  State<SearchView> createState() => _SearchViewState();
+}
+
+class _SearchViewState extends State<SearchView> {
   final AuthService auth = AuthService();
 
   SignUpAndLogin signupLogin = SignUpAndLogin();
-
-  ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +25,11 @@ class ProfileScreen extends StatelessWidget {
         child: ListView(
           children: [
             const SizedBox(height: 20),
-            Text("Profile Page", style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            Text("Search Page",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
           ],
         ),
       ),
-      bottomNavigationBar: CustomBottomNavBar(3),
     );
   }
 }

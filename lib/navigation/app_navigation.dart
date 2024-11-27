@@ -1,19 +1,26 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:testnav/main.dart';
+import 'package:testnav/views/addPatient/addPatient_view.dart';
 import 'package:testnav/views/home/home_view.dart';
-import 'package:testnav/views/home/sub_home_view.dart';
-import 'package:testnav/views/player/player_view.dart';
-import 'package:testnav/views/settings/settings_view.dart';
-import 'package:testnav/views/settings/sub_setting_view.dart';
+import 'package:testnav/views/profile/profile_view.dart';
+import 'package:testnav/views/search/search_view.dart';
+import 'package:testnav/views/signup_login/login_view.dart';
+import 'package:testnav/views/signup_login/signup_view.dart';
 import 'package:testnav/views/wrapper/main_wrapper.dart';
-
-import '../views/signup_login/login_view.dart';
-import '../views/signup_login/signup_view.dart';
 
 class AppNavigation {
   AppNavigation._();
 
-  static String initial = "/login_view";
+  static late String initial;
+
+  static Future<void> setInitial() async {
+    bool isLoggedIn = await hs.isLoggedIn();
+    initial = isLoggedIn ? "/home" : "/login";
+    log("Since User Is Logged In Initial Route: $initial");
+  }
 
   // Private navigators
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -21,6 +28,10 @@ class AppNavigation {
       GlobalKey<NavigatorState>(debugLabel: 'shellHome');
   static final _shellNavigatorSettings =
       GlobalKey<NavigatorState>(debugLabel: 'shellSettings');
+  static final _shellNavigatorProfile =
+      GlobalKey<NavigatorState>(debugLabel: 'shellProfile');
+  static final _shellNavigatorSearch =
+      GlobalKey<NavigatorState>(debugLabel: 'shellSearch');
 
   // GoRouter configuration
   static final GoRouter router = GoRouter(
@@ -28,6 +39,22 @@ class AppNavigation {
     debugLogDiagnostics: true,
     navigatorKey: _rootNavigatorKey,
     routes: [
+      // Login Route
+      GoRoute(
+        path: '/login',
+        name: 'Login',
+        builder: (BuildContext context, GoRouterState state) =>
+            const LoginView(),
+      ),
+
+      // Signup Route
+      GoRoute(
+        path: '/signup',
+        name: 'Signup',
+        builder: (BuildContext context, GoRouterState state) =>
+            const SignupView(),
+      ),
+
       /// MainWrapper
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
@@ -36,6 +63,39 @@ class AppNavigation {
           );
         },
         branches: <StatefulShellBranch>[
+          /// Brach addPatient
+          StatefulShellBranch(
+            navigatorKey: _shellNavigatorSettings,
+            routes: <RouteBase>[
+              GoRoute(
+                path: "/addPatient",
+                name: "Add Patient",
+                builder: (BuildContext context, GoRouterState state) =>
+                    const AddPatientView(),
+                // When adding the Pages Inside the Home
+                // routes: [
+                //   GoRoute(
+                //     path: "subSetting",
+                //     name: "subSetting",
+                //     pageBuilder: (context, state) {
+                //       return CustomTransitionPage<void>(
+                //         key: state.pageKey,
+                //         child: const SubSettingsView(),
+                //         transitionsBuilder: (
+                //           context,
+                //           animation,
+                //           secondaryAnimation,
+                //           child,
+                //         ) =>
+                //             FadeTransition(opacity: animation, child: child),
+                //       );
+                //     },
+                //   ),
+                // ],
+              ),
+            ],
+          ),
+
           /// Brach Home
           StatefulShellBranch(
             navigatorKey: _shellNavigatorHome,
@@ -44,111 +104,49 @@ class AppNavigation {
                 path: "/home",
                 name: "Home",
                 builder: (BuildContext context, GoRouterState state) =>
-                    const HomeView(),
-                routes: [
-                  GoRoute(
-                    path: 'subHome',
-                    name: 'subHome',
-                    pageBuilder: (context, state) => CustomTransitionPage<void>(
-                      key: state.pageKey,
-                      child: const SubHomeView(),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) =>
-                              FadeTransition(opacity: animation, child: child),
-                    ),
-                  ),
-                ],
+                    HomeView(),
+                // When adding the Pages Inside the Home
+                // routes: [
+                //   GoRoute(
+                //     path: 'subHome',
+                //     name: 'subHome',
+                //     pageBuilder: (context, state) => CustomTransitionPage<void>(
+                //       key: state.pageKey,
+                //       child: const SubHomeView(),
+                //       transitionsBuilder:
+                //           (context, animation, secondaryAnimation, child) =>
+                //               FadeTransition(opacity: animation, child: child),
+                //     ),
+                //   ),
+                // ],
               ),
             ],
           ),
 
-          /// Brach Setting
+          /// Brach Search
           StatefulShellBranch(
-            navigatorKey: _shellNavigatorSettings,
+            navigatorKey: _shellNavigatorSearch,
             routes: <RouteBase>[
               GoRoute(
-                path: "/settings",
-                name: "Settings",
-                builder: (BuildContext context, GoRouterState state) =>
-                    const SettingsView(),
-                routes: [
-                  GoRoute(
-                    path: "subSetting",
-                    name: "subSetting",
-                    pageBuilder: (context, state) {
-                      return CustomTransitionPage<void>(
-                        key: state.pageKey,
-                        child: const SubSettingsView(),
-                        transitionsBuilder: (
-                          context,
-                          animation,
-                          secondaryAnimation,
-                          child,
-                        ) =>
-                            FadeTransition(opacity: animation, child: child),
-                      );
-                    },
-                  ),
-                ],
+                path: '/search',
+                name: "Search",
+                builder: (context, state) => SearchView(),
+              ),
+            ],
+          ),
+
+          /// Brach Profile
+          StatefulShellBranch(
+            navigatorKey: _shellNavigatorProfile,
+            routes: <RouteBase>[
+              GoRoute(
+                path: '/profile',
+                name: "Profile",
+                builder: (context, state) => ProfileView(),
               ),
             ],
           ),
         ],
-      ),
-
-      /// signup_login
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/signup_login',
-        name: "SignupLogin",
-        builder: (BuildContext context, GoRouterState state) =>
-        const LoginScreen(),
-        routes: [
-          GoRoute(
-            path: "login_view",
-            name: "Login",
-            pageBuilder: (context, state) {
-              return CustomTransitionPage<void>(
-                key: state.pageKey,
-                child: const LoginScreen(),
-                transitionsBuilder: (
-                    context,
-                    animation,
-                    secondaryAnimation,
-                    child,
-                    ) =>
-                    FadeTransition(opacity: animation, child: child),
-              );
-            },
-          ),
-          GoRoute(
-            path: "signup_view",
-            name: "Signup",
-            pageBuilder: (context, state) {
-              return CustomTransitionPage<void>(
-                key: state.pageKey,
-                child: const SignupScreen(),
-                transitionsBuilder: (
-                    context,
-                    animation,
-                    secondaryAnimation,
-                    child,
-                    ) =>
-                    FadeTransition(opacity: animation, child: child),
-              );
-            },
-          ),
-        ],
-      ),
-
-      /// Player
-      GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
-        path: '/player',
-        name: "Player",
-        builder: (context, state) => PlayerView(
-          key: state.pageKey,
-        ),
       ),
     ],
   );
