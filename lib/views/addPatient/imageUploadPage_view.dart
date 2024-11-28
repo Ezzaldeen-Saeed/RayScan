@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +20,7 @@ class _ImageUpload_subviewState extends State<ImageUpload_subview> {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       setState(() {
+        _selectedImages.clear();
         _selectedImages.add(pickedFile);
       });
     }
@@ -31,7 +34,11 @@ class _ImageUpload_subviewState extends State<ImageUpload_subview> {
       return;
     }
 
-    final uri = Uri.parse("$flaskServerUrl/upload");
+    String url = "$flaskServerUrl/upload";
+    log("Uploading images to: $url");
+    log("Selected images: $_selectedImages");
+    log("Ngrok Auth Key: $ngrokAuthKey");
+    final uri = Uri.parse(url);
 
     try {
       var request = http.MultipartRequest('POST', uri);
@@ -51,6 +58,7 @@ class _ImageUpload_subviewState extends State<ImageUpload_subview> {
         var responseData = await http.Response.fromStream(response);
         setState(() {
           _responseMessage = responseData.body;
+          log("Response: $_responseMessage");
         });
       } else {
         setState(() {
@@ -78,7 +86,7 @@ class _ImageUpload_subviewState extends State<ImageUpload_subview> {
             ),
             SizedBox(height: 20),
             _selectedImages.isNotEmpty
-                ? Text("Selected Images: ${_selectedImages.length}",
+                ? Text("Selected Image: ${_selectedImages[0].name}",
                     style: TextStyle(fontSize: 20))
                 : Text("No images selected", style: TextStyle(fontSize: 20)),
             SizedBox(height: 20),

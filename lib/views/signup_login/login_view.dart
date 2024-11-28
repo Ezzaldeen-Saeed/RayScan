@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/utils/utility.dart';
 import 'package:testnav/widgets/button.dart';
-import 'package:testnav/widgets/snackBar.dart';
+import 'package:testnav/widgets/colors.dart';
 import 'package:testnav/widgets/textfield.dart';
 
 class LoginView extends StatefulWidget {
@@ -38,35 +38,29 @@ class _LoginViewState extends State<LoginView> {
     );
 
     if (!success) {
-      ScaffoldMessenger
-          .of(context)
+      ScaffoldMessenger.of(context)
           .showSnackBar(
-        CustomSnackBar(
-          message: "Login failed. Please try again.",
-          type: "error",
-          duration: 5,
-        ).build(context),
-      )
-          .closed // Wait for the SnackBar to disappear
+            SnackBar(
+              content: Text("Login failed. Please try again."),
+              backgroundColor: errorSnackBarBG,
+            ),
+          )
+          .closed
           .then((_) {
-        // Re-enable the button after SnackBar disappears
         setState(() {
           _isLoggingIn = false;
         });
       });
     } else {
-      ScaffoldMessenger
-          .of(context)
+      ScaffoldMessenger.of(context)
           .showSnackBar(
-        CustomSnackBar(
-          message: "Login Successful",
-          type: "success",
-          duration: 5,
-        ).build(context),
-      )
-          .closed // Wait for the success SnackBar to disappear
+            SnackBar(
+              content: Text("Login Successful"),
+              backgroundColor: successSnackBarBG,
+            ),
+          )
+          .closed
           .then((_) {
-        // Optionally, you can navigate to another page here
       });
     }
   }

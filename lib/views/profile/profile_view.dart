@@ -3,10 +3,10 @@ import 'package:intl/intl.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/utils/Utility.dart';
 import 'package:testnav/widgets/button.dart';
+import 'package:testnav/widgets/colors.dart';
 import 'package:testnav/widgets/profileData.dart';
 import 'package:testnav/widgets/selectbox.dart';
 import 'package:testnav/widgets/selectdate.dart';
-import 'package:testnav/widgets/snackBar.dart';
 import 'package:testnav/widgets/textfield.dart';
 
 class ProfileView extends StatefulWidget {
@@ -181,19 +181,17 @@ class _ProfileViewState extends State<ProfileView> {
     if (signOutSuccess) {
       // Sign out logic
       ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(
-          message: 'Signed out successfully!',
-          type: 'success',
-          duration: 5,
-        ).build(context),
+        SnackBar(
+          content: Text('Signed out successfully!'),
+          backgroundColor: successSnackBarBG,
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(
-          message: 'Sign out failed!',
-          type: 'error',
-          duration: 5,
-        ).build(context),
+        SnackBar(
+          content: Text('Sign out failed!'),
+          backgroundColor: errorSnackBarBG,
+        ),
       );
     }
 
@@ -205,11 +203,10 @@ class _ProfileViewState extends State<ProfileView> {
   void updateProfile(BuildContext context) {
     print('Update profile');
     ScaffoldMessenger.of(context).showSnackBar(
-      CustomSnackBar(
-        message: "Profile Updated Successfully",
-        type: "success",
-        duration: 5,
-      ).build(context),
+      SnackBar(
+        content: Text('Profile Updated Successfully!'),
+        backgroundColor: successSnackBarBG,
+      ),
     );
   }
 }

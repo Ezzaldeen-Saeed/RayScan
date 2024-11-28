@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/utils/utility.dart';
 import 'package:testnav/widgets/button.dart';
-import 'package:testnav/widgets/snackBar.dart';
+import 'package:testnav/widgets/colors.dart';
 import 'package:testnav/widgets/textfield.dart';
 
 class SignupView extends StatefulWidget {
@@ -46,19 +46,17 @@ class _SignupViewState extends State<SignupView> {
     if (!success) {
       // Handle signup failure (optional)
       ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(
-          message: "Login failed. Please try again.",
-          type: "error",
-          duration: 5,
-        ).build(context),
+        SnackBar(
+          content: Text('Signup failed. Please try again.'),
+          backgroundColor: errorSnackBarBG,
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        CustomSnackBar(
-          message: "Login Successful!",
-          type: "success",
-          duration: 5,
-        ).build(context),
+        SnackBar(
+          content: Text('Signup Successful'),
+          backgroundColor: successSnackBarBG,
+        ),
       );
     }
   }
