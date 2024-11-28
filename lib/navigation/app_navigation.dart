@@ -37,8 +37,8 @@ class AppNavigation {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   static final _shellNavigatorHome =
       GlobalKey<NavigatorState>(debugLabel: 'shellHome');
-  static final _shellNavigatorSettings =
-      GlobalKey<NavigatorState>(debugLabel: 'shellSettings');
+  static final _shellNavigatorAddPatient =
+      GlobalKey<NavigatorState>(debugLabel: 'shellAddPatient');
   static final _shellNavigatorProfile =
       GlobalKey<NavigatorState>(debugLabel: 'shellProfile');
   static final _shellNavigatorSearch =
@@ -74,9 +74,9 @@ class AppNavigation {
           );
         },
         branches: <StatefulShellBranch>[
-          /// Brach addPatient
+          /// Branch addPatient
           StatefulShellBranch(
-            navigatorKey: _shellNavigatorSettings,
+            navigatorKey: _shellNavigatorAddPatient,
             routes: <RouteBase>[
               GoRoute(
                 path: "/addPatient",
@@ -97,7 +97,14 @@ class AppNavigation {
                           secondaryAnimation,
                           child,
                         ) =>
-                            FadeTransition(opacity: animation, child: child),
+                            FadeUpwardsPageTransitionsBuilder()
+                                .buildTransitions(
+                          null,
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ),
                       );
                     },
                   ),
@@ -106,7 +113,7 @@ class AppNavigation {
             ],
           ),
 
-          /// Brach Home
+          /// Branch Home
           StatefulShellBranch(
             navigatorKey: _shellNavigatorHome,
             routes: <RouteBase>[
@@ -119,7 +126,7 @@ class AppNavigation {
             ],
           ),
 
-          /// Brach Search
+          /// Branch Search
           StatefulShellBranch(
             navigatorKey: _shellNavigatorSearch,
             routes: <RouteBase>[
@@ -131,7 +138,7 @@ class AppNavigation {
             ],
           ),
 
-          /// Brach Profile
+          /// Branch Profile
           StatefulShellBranch(
             navigatorKey: _shellNavigatorProfile,
             routes: <RouteBase>[
