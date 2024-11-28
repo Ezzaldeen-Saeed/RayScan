@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/utils/Utility.dart';
-import 'package:testnav/widgets/button.dart';
 import 'package:testnav/widgets/miniPatientCard.dart';
 import 'package:testnav/widgets/miniProfileCard.dart';
 
@@ -20,22 +19,15 @@ class HomeView extends StatelessWidget {
         alignment: Alignment.center,
         child: ListView(
           children: [
-            miniProfileCard(onPressed: () {
+            MiniProfileCard(onPressed: () {
               context.goNamed("Profile");
             }),
             const SizedBox(height: 20),
             miniPatientCard(),
             const SizedBox(height: 20),
-            CustomButton(
-              label: "Sign Out",
-              onPressed: () async {
-                signupLogin.signOut(context);
-              },
-            ),
           ],
         ),
       ),
     );
   }
 }
-

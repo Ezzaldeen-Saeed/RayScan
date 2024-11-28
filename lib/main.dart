@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:testnav/Storage/hiveManager.dart';
 import 'package:testnav/navigation/app_navigation.dart';
+import 'package:testnav/utils/splashScreen.dart';
 import 'package:testnav/widgets/colors.dart';
 
 // Hive Service
@@ -30,11 +31,23 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Go Router Example',
-      debugShowCheckedModeBanner: true,
-      routerConfig: AppNavigation.router,
+    return MaterialApp(
+      title: 'Splash Screen Example',
+      debugShowCheckedModeBanner: false,
+      home: const Splashscreen(nextScreen: AppNavigator()),
     );
   }
 }
 
+class AppNavigator extends StatelessWidget {
+  const AppNavigator({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      title: 'Go Router Example',
+      debugShowCheckedModeBanner: false,
+      routerConfig: AppNavigation.router,
+    );
+  }
+}

@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:testnav/widgets/colors.dart';
 
-class CustomTextField extends StatelessWidget {
-  const CustomTextField({
+class CustomDateSelection extends StatelessWidget {
+  const CustomDateSelection({
     super.key,
-    required this.hint,
     required this.label,
-    this.controller,
-    this.isPassword = false,
-    this.outLine = false,
+    required this.onDateSelected,
+    this.selectedDate,
+    this.hint = 'Select a date',
     this.backgroundColor = lightModeBG1,
     this.focusedBorderColor = primaryColor,
     this.isIconed = false,
     this.icon,
   });
 
-  final String hint;
-  final String label;
-  final bool isPassword;
-  final bool outLine;
-  final TextEditingController? controller;
-  final Color backgroundColor; // Background color of the text field
-  final Color focusedBorderColor; // Border color when the text field is focused
+  final String label; // Label for the date picker
+  final DateTime? selectedDate; // Currently selected date
+  final void Function(DateTime)
+      onDateSelected; // Callback when a date is selected
+  final String hint; // Hint text
+  final Color backgroundColor; // Background color of the field
+  final Color focusedBorderColor; // Border color when focused
   final bool isIconed; // Determines if an icon is added
   final Icon? icon; // Icon to display (if `isIconed` is true)
 
@@ -42,26 +42,40 @@ class CustomTextField extends StatelessWidget {
         elevation: 0,
         borderRadius: BorderRadius.circular(6),
         child: TextField(
-          obscureText: isPassword,
-          controller: controller,
+          readOnly: true, // Disable text input
+          controller: TextEditingController(
+            text: selectedDate != null
+                ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+                : '', // Format and display the selected date
+          ),
+          onTap: () async {
+            // Show date picker dialog
+            final pickedDate = await showDatePicker(
+              context: context,
+              initialDate: selectedDate ?? DateTime.now(),
+              firstDate: DateTime(1900),
+              lastDate: DateTime(2100),
+            );
+            if (pickedDate != null) {
+              onDateSelected(pickedDate);
+            }
+          },
           decoration: InputDecoration(
+            label: Text(label),
             hintText: hint,
             filled: true,
             fillColor: backgroundColor,
-            // Sets the background color
+            // Background color
             contentPadding: const EdgeInsets.symmetric(
               vertical: 15,
               horizontal: 10,
             ),
-            label: Text(label),
             prefixIcon: isIconed ? icon : null,
-            // Adds an icon if `isIconed` is true
-            border: outLine
-                ? OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6),
-                    borderSide: const BorderSide(color: Colors.grey, width: 1),
-                  )
-                : InputBorder.none,
+            // Optional icon
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(6),
+              borderSide: const BorderSide(color: Colors.grey, width: 1),
+            ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: BorderSide(

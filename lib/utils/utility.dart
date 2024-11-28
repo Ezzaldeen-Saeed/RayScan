@@ -27,37 +27,45 @@ class DarkModeController extends ChangeNotifier {
   }
 }
 
-class SignUpAndLogin{
+class SignUpAndLogin {
   final _auth = AuthService();
 
-  signup(BuildContext context, String name, String email, String password) async {
-    final user =
-    await _auth.createUserWithEmailAndPassword(name, email, password);
+  Future<bool> signup(BuildContext context, String firstName, String lastName,
+      String email, String password) async {
+    final user = await _auth.createUserWithEmailAndPassword(
+        firstName, lastName, email, password);
     if (user != null) {
       log("User Created Succesfully");
       login(context, email, password);
+      return true;
     }
+    return false;
   }
 
-  login(BuildContext context,String email, String password) async {
+  Future<bool> login(
+      BuildContext context, String email, String password) async {
     final user = await _auth.loginUserWithEmailAndPassword(email, password);
 
     if (user != null) {
       log("User Logged In");
       HiveService().setLoginStatus(true);
       Map data = await _auth.getCurrentUserData();
-      String name = data['name'];
+      String fName = data['userFirstName'];
+      String lName = data['userLastName'];
       String profileImagePath = data['profileImagePath'];
-      HiveService().saveUserData(name, email, profileImagePath);
+      HiveService().saveUserData(fName, lName, email, profileImagePath);
       context.go('/home');
+      return true;
     }
+    return false;
   }
 
-  signOut(BuildContext context) async {
+  Future<bool> signOut(BuildContext context) async {
     await _auth.signout();
     HiveService().setLoginStatus(false);
     HiveService().clearUserData();
     HiveService().clearAppCache();
     context.go('/login');
+    return true;
   }
 }

@@ -7,6 +7,7 @@ class MainWrapper extends StatefulWidget {
     required this.navigationShell,
     super.key,
   });
+
   final StatefulNavigationShell navigationShell;
 
   @override

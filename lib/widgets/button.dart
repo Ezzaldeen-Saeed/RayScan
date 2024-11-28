@@ -1,21 +1,46 @@
 import 'package:flutter/material.dart';
+import 'package:testnav/widgets/colors.dart';
 
 class CustomButton extends StatelessWidget {
-  const CustomButton({super.key, required this.label, this.onPressed});
+  const CustomButton({
+    super.key,
+    required this.label,
+    this.onPressed,
+    this.textColor = Colors.white,
+    this.BGColor = primaryColor,
+    this.size = 260,
+    this.isDisabled = false,
+  });
+
+  final bool isDisabled;
   final String label;
+  final Color BGColor, textColor;
+  final double size;
   final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        width: 180,
-        height: 42,
-        child: ElevatedButton(
-            onPressed: onPressed,
-            child: Text(
-              label,
-              style: const TextStyle(fontSize: 18),
-            )));
+      width: size,
+      height: 55,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: isDisabled ? Colors.grey : BGColor,
+          // Change color when disabled
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+        ),
+        onPressed: isDisabled ? null : onPressed, // Disable interaction
+        child: Text(
+          label,
+          style: TextStyle(
+            fontSize: size / 8.6,
+            color: textColor,
+          ),
+        ),
+      ),
+    );
   }
 }
 

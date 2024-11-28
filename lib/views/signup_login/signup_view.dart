@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/utils/utility.dart';
 import 'package:testnav/widgets/button.dart';
+import 'package:testnav/widgets/snackBar.dart';
 import 'package:testnav/widgets/textfield.dart';
 
 class SignupView extends StatefulWidget {
@@ -12,18 +13,54 @@ class SignupView extends StatefulWidget {
 }
 
 class _SignupViewState extends State<SignupView> {
-  final _name = TextEditingController();
+  final _firstName = TextEditingController();
+  final _lastName = TextEditingController();
   final _email = TextEditingController();
   final _password = TextEditingController();
 
   SignUpAndLogin signupLogin = SignUpAndLogin();
+  bool _isSigningUp = false; // Track signup state
 
   @override
   void dispose() {
     super.dispose();
-    _name.dispose();
+    _firstName.dispose();
+    _lastName.dispose();
     _email.dispose();
     _password.dispose();
+  }
+
+  Future<void> _handleSignup() async {
+    setState(() {
+      _isSigningUp = true;
+    });
+
+    final success = await signupLogin.signup(
+      context,
+      _firstName.text.trim(),
+      _lastName.text.trim(),
+      _email.text.trim(),
+      _password.text.trim(),
+    );
+
+    if (!success) {
+      // Handle signup failure (optional)
+      ScaffoldMessenger.of(context).showSnackBar(
+        CustomSnackBar(
+          message: "Login failed. Please try again.",
+          type: "error",
+          duration: 5,
+        ).build(context),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        CustomSnackBar(
+          message: "Login Successful!",
+          type: "success",
+          duration: 5,
+        ).build(context),
+      );
+    }
   }
 
   @override
@@ -34,19 +71,19 @@ class _SignupViewState extends State<SignupView> {
         child: Column(
           children: [
             const Spacer(),
-            const Text(
-                "Signup",
-                style: TextStyle(
-                    fontSize: 40,
-                    fontWeight:
-                    FontWeight.w500
-                )
-            ),
+            const Text("Signup",
+                style: TextStyle(fontSize: 40, fontWeight: FontWeight.w500)),
             const SizedBox(height: 50),
             CustomTextField(
-              hint: "Enter Name",
-              label: "Name",
-              controller: _name,
+              hint: "Enter First Name",
+              label: "First Name",
+              controller: _firstName,
+            ),
+            const SizedBox(height: 20),
+            CustomTextField(
+              hint: "Enter Last Name",
+              label: "Last Name",
+              controller: _lastName,
             ),
             const SizedBox(height: 20),
             CustomTextField(
@@ -64,14 +101,8 @@ class _SignupViewState extends State<SignupView> {
             const SizedBox(height: 30),
             CustomButton(
               label: "Signup",
-              onPressed: () {
-                signupLogin.signup(
-                  context,
-                  _name.text,
-                  _email.text,
-                  _password.text
-                );
-              },
+              isDisabled: _isSigningUp, // Disable button during signup
+              onPressed: _isSigningUp ? null : _handleSignup,
             ),
             const SizedBox(height: 5),
             Row(

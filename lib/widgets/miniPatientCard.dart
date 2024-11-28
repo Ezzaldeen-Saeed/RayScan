@@ -3,8 +3,8 @@ import 'package:testnav/main.dart';
 
 class miniPatientCard extends StatelessWidget {
   const miniPatientCard({super.key, this.onPressed});
-  final void Function()? onPressed;
 
+  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,8 @@ class miniPatientCard extends StatelessWidget {
         leading: Icon(Icons.person, color: currentTextColor),
         title: Text(
           "Latest Diagnosis",
-          style: TextStyle(fontWeight: FontWeight.bold, color: currentTextColor),
+          style:
+              TextStyle(fontWeight: FontWeight.bold, color: currentTextColor),
         ),
         subtitle: Text(
           "Patient Name: John Doe\nDate of Birth: 01/01/1980",
@@ -39,17 +40,14 @@ class miniPatientCard extends StatelessWidget {
 
   Future<String> getLatestPatientData(String type) async {
     var value = await hs.getLatestPatientData();
-    if (value != null) {
-      switch (type) {
-        case 'patientName':
-          return value['patientName'] ?? 'No patientName';
-        case 'patientGender':
-          return value['patientGender'] ?? 'Others';
-        case 'patientDOB':
-          return value['patientDOB'] ?? '0/0/0';
-      }
+    switch (type) {
+      case 'patientName':
+        return value['patientName'] ?? 'No patientName';
+      case 'patientGender':
+        return value['patientGender'] ?? 'Others';
+      case 'patientDOB':
+        return value['patientDOB'] ?? '0/0/0';
     }
     return 'Error';
   }
-
 }

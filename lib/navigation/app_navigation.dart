@@ -4,14 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/views/addPatient/addPatient_view.dart';
+import 'package:testnav/views/addPatient/imageUploadPage_view.dart';
 import 'package:testnav/views/home/home_view.dart';
 import 'package:testnav/views/profile/profile_view.dart';
 import 'package:testnav/views/search/search_view.dart';
 import 'package:testnav/views/signup_login/login_view.dart';
 import 'package:testnav/views/signup_login/signup_view.dart';
 import 'package:testnav/views/wrapper/main_wrapper.dart';
-
-import '../views/addPatient/imageUploadPage_view.dart';
 
 // Pages Names
 //  - /login
@@ -26,10 +25,11 @@ class AppNavigation {
   AppNavigation._();
 
   static late String initial;
+
   static Future<void> setInitial() async {
     bool isLoggedIn = await hs.isLoggedIn();
-    // initial = isLoggedIn ? "/home" : "/login";
-    initial = "/home";
+    initial = isLoggedIn ? "/home" : "/login";
+    // initial = "/profile";
     log("Since User Is Logged In Initial Route: $initial");
   }
 
