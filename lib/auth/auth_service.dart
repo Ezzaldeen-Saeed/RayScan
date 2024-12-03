@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-final String flaskServerUrl = "https://beloved-simply-piglet.ngrok-free.app";
-final String ngrokAuthKey = "2pMS326VkCAcdJvvQsNGyAJbJSq_7oKjcn4FoEvS5ersmd5Ch";
+final String flaskServerUrl = "https://concrete-grub-immensely.ngrok-free.app";
+final String ngrokAuthKey = "2pDPe8ogpPOBHqz4nBgLkAcDbZ4_82p96Bo7vdpmcvDtKAWFN";
 
 class AuthService {
   final _auth = FirebaseAuth.instance;
