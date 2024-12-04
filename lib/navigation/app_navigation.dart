@@ -7,6 +7,7 @@ import 'package:testnav/views/addPatient/addPatient_view.dart';
 import 'package:testnav/views/addPatient/imageUploadPage_view.dart';
 import 'package:testnav/views/home/home_view.dart';
 import 'package:testnav/views/profile/profile_view.dart';
+import 'package:testnav/views/search/patientProfile_view.dart';
 import 'package:testnav/views/search/search_view.dart';
 import 'package:testnav/views/signup_login/login_view.dart';
 import 'package:testnav/views/signup_login/signup_view.dart';
@@ -17,6 +18,7 @@ import 'package:testnav/views/wrapper/main_wrapper.dart';
 //  - /signup
 //  - /home
 //  - /search
+//  - /search/patientProfile_subview
 //  - /profile
 //  - /addPatient
 //  - /addPatient/imageUpload_subview
@@ -29,7 +31,7 @@ class AppNavigation {
   static Future<void> setInitial() async {
     bool isLoggedIn = await hs.isLoggedIn();
     // initial = isLoggedIn ? "/home" : "/login";
-    initial = "/addPatient/imageUpload_subview";
+    initial = "/search";
     log("Since User Is Logged In Initial Route: $initial");
   }
 
@@ -133,7 +135,38 @@ class AppNavigation {
               GoRoute(
                 path: '/search',
                 name: "Search",
-                builder: (context, state) => SearchView(),
+                builder: (BuildContext context, GoRouterState state) =>
+                    const SearchView(),
+                routes: [
+                  GoRoute(
+                    path: "patientProfile_subview",
+                    name: "patient Profile Page",
+                    pageBuilder: (context, state) {
+                      // Pass the state to the widget
+                      return CustomTransitionPage<void>(
+                        key: state.pageKey,
+                        child: patientProfile_subview(
+                          data: state.extra
+                              as Map<String, dynamic>?, // Pass the extra data
+                        ),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) =>
+                            FadeUpwardsPageTransitionsBuilder()
+                                .buildTransitions(
+                          null,
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

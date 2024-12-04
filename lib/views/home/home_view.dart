@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/auth/auth_service.dart';
@@ -23,7 +24,31 @@ class HomeView extends StatelessWidget {
               context.goNamed("Profile");
             }),
             const SizedBox(height: 20),
-            miniPatientCard(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Latest Patients:',
+                    style: TextStyle(
+                      color: currentTextColor,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  PatientProfileCard(
+                      id: "1",
+                      fName: "John",
+                      lName: "Doe",
+                      gender: "Male",
+                      age: 21,
+                      birthDate: Timestamp.now(),
+                      phoneNumber: "1234567890",
+                      disease: 'Covid-19'),
+                ],
+              ),
+            ),
             const SizedBox(height: 20),
           ],
         ),

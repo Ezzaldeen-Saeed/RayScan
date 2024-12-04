@@ -34,7 +34,8 @@ class AuthService {
     return null;
   }
 
-  Future<User?> loginUserWithEmailAndPassword(String email, String password) async {
+  Future<User?> loginUserWithEmailAndPassword(
+      String email, String password) async {
     try {
       final cred = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
@@ -84,6 +85,132 @@ class AuthService {
       }
     } catch (e) {
       log("Error in updateProfileData: $e, Type: ${e.runtimeType}");
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getPatientsByCurrentUserUID() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        // Query to fetch all patients with the same UID as the current user
+        final querySnapshot = await _firestore
+            .collection('Patients')
+            .where('UID', isEqualTo: user.uid)
+            .get();
+
+        log("Fetching patients for UID: ${user.uid}");
+
+        // Map each document to a list of patient data
+        return querySnapshot.docs.map((doc) {
+          return {
+            'id': doc.id, // Document ID for further reference
+            'age': doc['Age'],
+            'birthDate': doc['Birth_Date'],
+            'firstName': doc['FName'],
+            'lastName': doc['LName'],
+            'gender': doc['gender'],
+            'phoneNumber': doc['phoneNumber'],
+            'uid': doc['UID'],
+          };
+        }).toList();
+      } else {
+        log("No user is logged in.");
+      }
+    } catch (e) {
+      log("Error in getPatientsByCurrentUserUID: $e, Type: ${e.runtimeType}");
+    }
+    return [];
+  }
+
+  Future<List<Map<String, dynamic>>> getPatientDiagnosisByPatientPID(
+      String PID) async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        // Query to fetch all patients with the same UID as the current user
+        final querySnapshot = await _firestore
+            .collection('Diagnosis')
+            .where('PID', isEqualTo: PID)
+            .get();
+
+        log("Fetching patients Diagnosis with PID: $PID");
+
+        // Map each document to a list of patient data
+        return querySnapshot.docs.map((doc) {
+          return {
+            'id': doc.id, // Document ID for further reference
+            'Diagnosis': doc['Diagnosis'],
+            'Diagnosis_Date': doc['Diagnosis_Date'],
+            'Image_Path': doc['Image_Path'],
+            'PID': doc['PID'],
+            'label': doc['label'],
+          };
+        }).toList();
+      } else {
+        log("No user is logged in.");
+      }
+    } catch (e) {
+      log("Error in getPatientDiagnosisByPID: $e, Type: ${e.runtimeType}");
+    }
+    return [];
+  }
+
+  Future<List<Map<String, dynamic>>> getCurrentUserPatientsFullDetails() async {
+    final patients = await getPatientsByCurrentUserUID();
+    List<Map<String, dynamic>> fullDetails = [];
+    for (var patient in patients) {
+      final diagnosis = await getPatientDiagnosisByPatientPID(patient['id']);
+      fullDetails.add({'patient': patient, 'diagnosis': diagnosis});
+    }
+    log("Full Details: $fullDetails");
+    return fullDetails;
+  }
+
+  Future<void> addPatient(
+    String fName,
+    String lName,
+    Timestamp birthDate,
+    String gender,
+    String phoneNumber,
+    int age,
+    List<Map<String, dynamic>> diagnosisList,
+  ) async {
+    try {
+      // Create a new document in the Patients collection
+      final newPatientRef = _firestore.collection('Patients').doc();
+
+      final patientData = {
+        'id': newPatientRef.id, // Assign the document ID
+        'FName': fName,
+        'LName': lName,
+        'Birth_Date': birthDate,
+        'gender': gender,
+        'Age': age,
+        'phoneNumber': phoneNumber,
+        'UID': _auth.currentUser!.uid,
+      };
+
+      // Add the patient data
+      await newPatientRef.set(patientData);
+      log('Added new patient: ${newPatientRef.id}');
+
+      // Add each diagnosis for the patient
+      for (var diagnosis in diagnosisList) {
+        final diagnosisRef = _firestore.collection('Diagnosis').doc();
+        final diagnosisData = {
+          'id': diagnosisRef.id,
+          'PID': newPatientRef.id,
+          'Diagnosis': diagnosis['Diagnosis'],
+          'Diagnosis_Date': diagnosis['Diagnosis_Date'],
+          'Image_Path': diagnosis['Image_Path'],
+          'label': diagnosis['label'],
+        };
+
+        await diagnosisRef.set(diagnosisData);
+        log('Added diagnosis: ${diagnosisRef.id} for patient: ${newPatientRef.id}');
+      }
+    } catch (e) {
+      log('Error adding patient: $e');
     }
   }
 }
