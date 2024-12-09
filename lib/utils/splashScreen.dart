@@ -14,7 +14,7 @@ class Splashscreen extends StatelessWidget {
         children: [
           Center(
             child: LottieBuilder.asset(
-              "assets/Lottie/Animation - 1732770322972.json",
+              "assets/Lottie/2.json",
             ),
           ),
         ],

@@ -7,7 +7,7 @@ class MiniProfileCard extends StatelessWidget {
 
   final void Function()? onPressed;
 
-  ProfileData profileData = ProfileData();
+  final ProfileData profileData = ProfileData();
 
   @override
   Widget build(BuildContext context) {

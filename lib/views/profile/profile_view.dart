@@ -12,7 +12,7 @@ import 'package:testnav/widgets/textfield.dart';
 class ProfileView extends StatefulWidget {
   ProfileView({super.key});
 
-  ProfileData profileData = ProfileData();
+  final ProfileData profileData = ProfileData();
 
   @override
   State<ProfileView> createState() => _ProfileViewState();

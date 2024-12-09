@@ -13,6 +13,7 @@ class CustomTextField extends StatelessWidget {
     this.focusedBorderColor = primaryColor,
     this.isIconed = false,
     this.icon,
+    this.keyboardType,
   });
 
   final String hint;
@@ -23,7 +24,8 @@ class CustomTextField extends StatelessWidget {
   final Color backgroundColor; // Background color of the text field
   final Color focusedBorderColor; // Border color when the text field is focused
   final bool isIconed; // Determines if an icon is added
-  final Icon? icon; // Icon to display (if `isIconed` is true)
+  final Icon? icon;
+  final TextInputType? keyboardType;
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +76,7 @@ class CustomTextField extends StatelessWidget {
               borderSide: const BorderSide(color: Colors.grey, width: 1),
             ),
           ),
+          keyboardType: keyboardType,
         ),
       ),
     );

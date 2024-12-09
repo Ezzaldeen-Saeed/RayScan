@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:testnav/widgets/colors.dart';
 
-class CustomDateSelection extends StatelessWidget {
+class CustomDateSelection extends StatefulWidget {
   const CustomDateSelection({
     super.key,
     required this.label,
@@ -16,7 +16,7 @@ class CustomDateSelection extends StatelessWidget {
   });
 
   final String label; // Label for the date picker
-  final DateTime? selectedDate; // Currently selected date
+  final DateTime? selectedDate; // Initially selected date
   final void Function(DateTime)
       onDateSelected; // Callback when a date is selected
   final String hint; // Hint text
@@ -24,6 +24,19 @@ class CustomDateSelection extends StatelessWidget {
   final Color focusedBorderColor; // Border color when focused
   final bool isIconed; // Determines if an icon is added
   final Icon? icon; // Icon to display (if `isIconed` is true)
+
+  @override
+  _CustomDateSelectionState createState() => _CustomDateSelectionState();
+}
+
+class _CustomDateSelectionState extends State<CustomDateSelection> {
+  DateTime? _selectedDate;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.selectedDate;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,34 +57,35 @@ class CustomDateSelection extends StatelessWidget {
         child: TextField(
           readOnly: true, // Disable text input
           controller: TextEditingController(
-            text: selectedDate != null
-                ? DateFormat('yyyy-MM-dd').format(selectedDate!)
+            text: _selectedDate != null
+                ? DateFormat('yyyy-MM-dd').format(_selectedDate!)
                 : '', // Format and display the selected date
           ),
           onTap: () async {
             // Show date picker dialog
             final pickedDate = await showDatePicker(
               context: context,
-              initialDate: selectedDate ?? DateTime.now(),
+              initialDate: _selectedDate ?? DateTime.now(),
               firstDate: DateTime(1900),
               lastDate: DateTime(2100),
             );
             if (pickedDate != null) {
-              onDateSelected(pickedDate);
+              setState(() {
+                _selectedDate = pickedDate;
+              });
+              widget.onDateSelected(pickedDate);
             }
           },
           decoration: InputDecoration(
-            label: Text(label),
-            hintText: hint,
+            label: Text(widget.label),
+            hintText: widget.hint,
             filled: true,
-            fillColor: backgroundColor,
-            // Background color
+            fillColor: widget.backgroundColor,
             contentPadding: const EdgeInsets.symmetric(
               vertical: 15,
               horizontal: 10,
             ),
-            prefixIcon: isIconed ? icon : null,
-            // Optional icon
+            prefixIcon: widget.isIconed ? widget.icon : null,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: const BorderSide(color: Colors.grey, width: 1),
@@ -79,7 +93,7 @@ class CustomDateSelection extends StatelessWidget {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(6),
               borderSide: BorderSide(
-                color: focusedBorderColor,
+                color: widget.focusedBorderColor,
                 width: 2,
               ), // On-focus border color
             ),

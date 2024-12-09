@@ -1,5 +1,6 @@
-import 'dart:developer';
+import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/Storage/hiveManager.dart';
@@ -35,7 +36,7 @@ class SignUpAndLogin {
     final user = await _auth.createUserWithEmailAndPassword(
         firstName, lastName, email, password);
     if (user != null) {
-      log("User Created Succesfully");
+      print("/-/-/-//-/-/-/-//////-/-----/User Created Succesfully");
       login(context, email, password);
       return true;
     }
@@ -47,7 +48,7 @@ class SignUpAndLogin {
     final user = await _auth.loginUserWithEmailAndPassword(email, password);
 
     if (user != null) {
-      log("User Logged In");
+      print("//-//---/--//-/-/-/-User Logged In");
       HiveService().setLoginStatus(true);
       Map data = await _auth.getCurrentUserData();
       String fName = data['userFirstName'];
@@ -67,5 +68,55 @@ class SignUpAndLogin {
     HiveService().clearAppCache();
     context.go('/login');
     return true;
+  }
+}
+
+class RandomPatientGenerator {
+  final List<String> firstNames = [
+    'John',
+    'Jane',
+    'Michael',
+    'Emily',
+    'Chris',
+    'Sarah',
+    'David',
+    'Anna'
+  ];
+  final List<String> lastNames = [
+    'Smith',
+    'Johnson',
+    'Brown',
+    'Williams',
+    'Jones',
+    'Miller',
+    'Davis',
+    'Garcia'
+  ];
+  final List<String> genders = ['Male', 'Female'];
+  final Random random = Random();
+
+  Map<String, dynamic> generateRandomPatient() {
+    final String firstName = firstNames[random.nextInt(firstNames.length)];
+    final String lastName = lastNames[random.nextInt(lastNames.length)];
+    final String gender = genders[random.nextInt(genders.length)];
+    final int age = random.nextInt(100); // Age between 0 and 99
+    final String phone = List.generate(10, (_) => random.nextInt(10))
+        .join(); // Generate 10-digit phone as string
+
+    // Generate a valid random date for diagnosis
+    final DateTime now = DateTime.now();
+    final DateTime randomDate =
+        now.subtract(Duration(days: random.nextInt(365 * 50))); // 50 years max
+    final Timestamp diagnosisDate = Timestamp.fromDate(randomDate);
+
+    return {
+      'firstName': firstName,
+      'lastName': lastName,
+      'dateOfBirth': DateTime(
+          now.year - age, random.nextInt(12) + 1, random.nextInt(28) + 1),
+      'gender': gender,
+      'phone': phone,
+      'age': age,
+    };
   }
 }

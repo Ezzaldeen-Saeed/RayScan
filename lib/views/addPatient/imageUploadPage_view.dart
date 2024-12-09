@@ -84,29 +84,31 @@ class _ImageUploadSubviewState extends State<ImageUpload_subview> {
       appBar: AppBar(title: Text("Image Uploader")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            ElevatedButton(
-              onPressed: pickImage,
-              child: Text("Pick Image", style: TextStyle(fontSize: 20)),
-            ),
-            SizedBox(height: 20),
-            _selectedImage.path.isNotEmpty
-                ? Text("Selected Image: ${_selectedImage.name}",
-                    style: TextStyle(fontSize: 20))
-                : Text("No images selected", style: TextStyle(fontSize: 20)),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: uploadImage,
-              child: Text("Upload Image", style: TextStyle(fontSize: 20)),
-            ),
-            SizedBox(height: 20),
-            Text(
-              _responseMessage,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.blue),
-            ),
-          ],
+        child: Center(
+          child: Column(
+            children: [
+              ElevatedButton(
+                onPressed: pickImage,
+                child: Text("Pick Image", style: TextStyle(fontSize: 20)),
+              ),
+              SizedBox(height: 20),
+              _selectedImage.path.isNotEmpty
+                  ? Text("Selected Image: ${_selectedImage.name}",
+                      style: TextStyle(fontSize: 20))
+                  : Text("No images selected", style: TextStyle(fontSize: 20)),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: uploadImage,
+                child: Text("Upload Image", style: TextStyle(fontSize: 20)),
+              ),
+              SizedBox(height: 20),
+              Text(
+                _responseMessage,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.blue, fontSize: 20),
+              ),
+            ],
+          ),
         ),
       ),
     );

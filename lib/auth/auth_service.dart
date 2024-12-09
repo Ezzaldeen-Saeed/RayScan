@@ -3,6 +3,16 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// EZZ
+// https://concrete-grub-immensely.ngrok-free.app
+// 2pDPe8ogpPOBHqz4nBgLkAcDbZ4_82p96Bo7vdpmcvDtKAWFN
+
+// Shefo
+// https://beloved-simply-piglet.ngrok-free.app
+// 2pMS326VkCAcdJvvQsNGyAJbJSq_7oKjcn4FoEvS5ersmd5Ch
+
+// to run NGROK: ngrok http --url=concrete-grub-immensely.ngrok-free.app 5000
+
 final String flaskServerUrl = "https://concrete-grub-immensely.ngrok-free.app";
 final String ngrokAuthKey = "2pDPe8ogpPOBHqz4nBgLkAcDbZ4_82p96Bo7vdpmcvDtKAWFN";
 
@@ -166,15 +176,8 @@ class AuthService {
     return fullDetails;
   }
 
-  Future<void> addPatient(
-    String fName,
-    String lName,
-    Timestamp birthDate,
-    String gender,
-    String phoneNumber,
-    int age,
-    List<Map<String, dynamic>> diagnosisList,
-  ) async {
+  Future<String> createNewPatient(String fName, String lName,
+      DateTime birthDate, String gender, String phoneNumber, int age) async {
     try {
       // Create a new document in the Patients collection
       final newPatientRef = _firestore.collection('Patients').doc();
@@ -193,13 +196,21 @@ class AuthService {
       // Add the patient data
       await newPatientRef.set(patientData);
       log('Added new patient: ${newPatientRef.id}');
+      return newPatientRef.id;
+    } catch (e) {
+      log('Error adding new patient: $e');
+    }
+    return "";
+  }
 
-      // Add each diagnosis for the patient
-      for (var diagnosis in diagnosisList) {
+  Future<void> addDiagnosis(
+      String patientId, List<Map<String, dynamic>>? diagnosisList) async {
+    try {
+      for (var diagnosis in diagnosisList ?? []) {
         final diagnosisRef = _firestore.collection('Diagnosis').doc();
         final diagnosisData = {
           'id': diagnosisRef.id,
-          'PID': newPatientRef.id,
+          'PID': patientId,
           'Diagnosis': diagnosis['Diagnosis'],
           'Diagnosis_Date': diagnosis['Diagnosis_Date'],
           'Image_Path': diagnosis['Image_Path'],
@@ -207,10 +218,19 @@ class AuthService {
         };
 
         await diagnosisRef.set(diagnosisData);
-        log('Added diagnosis: ${diagnosisRef.id} for patient: ${newPatientRef.id}');
+        log('Added diagnosis: ${diagnosisRef.id} for patient: $patientId');
       }
     } catch (e) {
-      log('Error adding patient: $e');
+      log('Error adding diagnosis: $e');
+    }
+  }
+
+  Future<void> deletePatient(String patientId) async {
+    try {
+      await _firestore.collection('Patients').doc(patientId).delete();
+      log('Deleted patient: $patientId');
+    } catch (e) {
+      log('Error deleting patient: $e');
     }
   }
 }

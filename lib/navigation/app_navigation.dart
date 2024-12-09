@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:testnav/main.dart';
 import 'package:testnav/views/addPatient/addPatient_view.dart';
 import 'package:testnav/views/addPatient/imageUploadPage_view.dart';
 import 'package:testnav/views/home/home_view.dart';
@@ -29,7 +28,7 @@ class AppNavigation {
   static late String initial;
 
   static Future<void> setInitial() async {
-    bool isLoggedIn = await hs.isLoggedIn();
+    // bool isLoggedIn = await hs.isLoggedIn();
     // initial = isLoggedIn ? "/home" : "/login";
     initial = "/search";
     log("Since User Is Logged In Initial Route: $initial");
@@ -80,12 +79,14 @@ class AppNavigation {
           StatefulShellBranch(
             navigatorKey: _shellNavigatorAddPatient,
             routes: <RouteBase>[
+              // Add Patient Route
               GoRoute(
                 path: "/addPatient",
                 name: "Add Patient",
                 builder: (BuildContext context, GoRouterState state) =>
                     const AddPatientView(),
                 routes: [
+                  // Image Upload Subview
                   GoRoute(
                     path: "imageUpload_subview",
                     name: "Image Upload Page",
@@ -119,6 +120,7 @@ class AppNavigation {
           StatefulShellBranch(
             navigatorKey: _shellNavigatorHome,
             routes: <RouteBase>[
+              // Home Route
               GoRoute(
                 path: "/home",
                 name: "Home",
@@ -138,6 +140,7 @@ class AppNavigation {
                 builder: (BuildContext context, GoRouterState state) =>
                     const SearchView(),
                 routes: [
+                  // Patient Profile Subview
                   GoRoute(
                     path: "patientProfile_subview",
                     name: "patient Profile Page",

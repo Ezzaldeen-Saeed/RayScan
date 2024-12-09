@@ -10,7 +10,7 @@ import 'package:testnav/widgets/miniProfileCard.dart';
 class HomeView extends StatelessWidget {
   final AuthService auth = AuthService();
 
-  SignUpAndLogin signupLogin = SignUpAndLogin();
+  final SignUpAndLogin signupLogin = SignUpAndLogin();
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,9 @@ class HomeView extends StatelessWidget {
                       age: 21,
                       birthDate: Timestamp.now(),
                       phoneNumber: "1234567890",
-                      disease: 'Covid-19'),
+                      disease: 'Covid-19',
+                      onDismissed: () {},
+                      isDismissable: false),
                 ],
               ),
             ),

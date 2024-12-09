@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/widgets/colors.dart';
 
 class PatientProfileCard extends StatelessWidget {
@@ -12,17 +13,22 @@ class PatientProfileCard extends StatelessWidget {
   final String lName;
   final String phoneNumber;
   final String disease; // Accept dynamic disease summaries.
+  final VoidCallback onDismissed; // Callback to remove the item from the list
+  bool isDismissable = true;
+  final AuthService auth = AuthService();
 
-  const PatientProfileCard({
+  PatientProfileCard({
     super.key,
     required this.id,
     required this.gender,
     required this.age,
-    required this.disease, // No default value; it will come dynamically.
+    required this.disease,
     required this.fName,
     required this.phoneNumber,
     required this.birthDate,
     required this.lName,
+    required this.onDismissed,
+    this.isDismissable = true, // Initialize the callback
   });
 
   @override
@@ -31,6 +37,31 @@ class PatientProfileCard extends StatelessWidget {
     final String formattedBirthDate =
         "${birthDate.toDate().day}/${birthDate.toDate().month}/${birthDate.toDate().year}";
 
+    return isDismissable
+        ? Dismissible(
+            key: Key(id),
+            // Unique key for this card
+            direction: DismissDirection.endToStart,
+            // Swipe from right to left
+            background: Container(
+              color: Colors.red,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: const Icon(
+                Icons.delete,
+                color: Colors.white,
+                size: 30,
+              ),
+            ),
+            onDismissed: (direction) {
+              onDismissed(); // Call the callback
+            },
+            child: patientData(context, formattedBirthDate),
+          )
+        : patientData(context, formattedBirthDate);
+  }
+
+  patientData(BuildContext context, String formattedBirthDate) {
     return GestureDetector(
       onTap: () {
         context.go(
@@ -43,7 +74,7 @@ class PatientProfileCard extends StatelessWidget {
             'fName': fName,
             'phoneNumber': phoneNumber,
             'birthDate': formattedBirthDate,
-            'lName': lName
+            'lName': lName,
           },
         );
       },

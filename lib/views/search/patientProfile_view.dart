@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:testnav/main.dart';
@@ -8,9 +7,10 @@ import 'package:testnav/widgets/colors.dart';
 import 'package:testnav/widgets/selectbox.dart';
 import 'package:testnav/widgets/selectdate.dart';
 import 'package:testnav/widgets/textfield.dart';
+import 'package:testnav/widgets/toggleButton.dart';
 
 class patientProfile_subview extends StatefulWidget {
-  final Map<String, dynamic>? data; // Add a parameter to accept the data
+  final Map<String, dynamic>? data;
 
   const patientProfile_subview({super.key, this.data});
 
@@ -22,22 +22,29 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
+  final TextEditingController _dobController = TextEditingController();
 
   SignUpAndLogin signupLogin = SignUpAndLogin();
   bool _isSigningOut = false; // Track sign-out state
+  List<bool> _isSelected = [true, false]; // Initialize _isSelected
 
   @override
   void dispose() {
     _firstNameController.dispose();
     _lastNameController.dispose();
     _phoneNumberController.dispose();
+    _genderController.dispose();
+    _dobController.dispose();
     super.dispose();
   }
 
   Future<void> _initializeUserData() async {
-    _firstNameController.text = await widget.data?['fName'];
-    _lastNameController.text = await widget.data?['lName'];
-    _phoneNumberController.text = await widget.data?['phoneNumber'];
+    _firstNameController.text = widget.data?['fName'] ?? '';
+    _lastNameController.text = widget.data?['lName'] ?? '';
+    _phoneNumberController.text = widget.data?['phoneNumber'] ?? '';
+    _genderController.text = widget.data?['gender'] ?? '';
+    _dobController.text = widget.data?['birthDate'] ?? '';
   }
 
   @override
@@ -69,11 +76,27 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
                       radius: 40,
                       backgroundColor: Colors.grey[300],
                       child: Text(
-                        // First letter of the name
-                        fname.toString()[0],
+                        fname?.isNotEmpty == true
+                            ? fname![0].toUpperCase()
+                            : '?',
                         style: TextStyle(
                             fontSize: 30, fontWeight: FontWeight.bold),
                       ),
+                    ),
+                    const SizedBox(height: 15),
+                    CustomToggleButtons(
+                      labels: ['Profile Data', 'Diagnosis Data'],
+                      isSelected: _isSelected,
+                      onToggle: (int index) {
+                        setState(() {
+                          for (int i = 0; i < _isSelected.length; i++) {
+                            _isSelected[i] = i == index;
+                          }
+                        });
+                      },
+                      selectedColor: Colors.white,
+                      borderColor: Colors.blue,
+                      padding: 16.0,
                     ),
                     const SizedBox(height: 15),
                     Padding(
@@ -108,25 +131,25 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
                             items: ['Male', 'Female'],
                             label: "Gender",
                             hint: "Choose one",
-                            selectedValue: widget.data?['gender'] == "Male"
-                                ? "Male"
-                                : "Female",
+                            selectedValue: _genderController.text,
                             onChanged: (value) {
-                              print("Selected: $value");
+                              setState(() {
+                                _genderController.text = value!;
+                              });
                             },
                           ),
                           const SizedBox(height: 20),
                           CustomDateSelection(
-                            hint: "Select Date",
                             label: "What is your date of birth?",
-                            selectedDate:
-                                (widget.data?['birthDate'] is Timestamp)
-                                    ? (widget.data?['birthDate'] as Timestamp?)
-                                        ?.toDate()
-                                    : null,
+                            selectedDate: _dobController.text.isNotEmpty
+                                ? DateFormat('dd/MM/yyyy').parse(_dobController
+                                    .text) // Updated to match the input format
+                                : null,
                             onDateSelected: (date) {
-                              print(
-                                  "Selected Date: ${DateFormat('yyyy-MM-dd').format(date)}");
+                              setState(() {
+                                _dobController.text = DateFormat('dd/MM/yyyy')
+                                    .format(date); // Keep consistent formatting
+                              });
                             },
                             isIconed: true,
                             icon: const Icon(Icons.calendar_today),

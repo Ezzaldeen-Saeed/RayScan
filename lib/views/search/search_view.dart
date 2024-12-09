@@ -1,8 +1,6 @@
-import 'dart:developer';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:testnav/auth/auth_service.dart';
+import 'package:testnav/utils/utility.dart';
 import 'package:testnav/widgets/advancedSearchDialog.dart';
 import 'package:testnav/widgets/patientsList.dart';
 
@@ -23,6 +21,7 @@ class _SearchViewState extends State<SearchView> {
 
   List<Map<String, dynamic>> records = [];
   List<Map<String, dynamic>> filteredPatients = [];
+  bool isLoading = false; // New state variable for loading
 
   final AuthService auth = AuthService();
 
@@ -33,6 +32,10 @@ class _SearchViewState extends State<SearchView> {
   }
 
   Future<void> _fetchPatients() async {
+    setState(() {
+      isLoading = true; // Start loading
+    });
+
     try {
       final patients = await auth.getCurrentUserPatientsFullDetails();
       setState(() {
@@ -41,30 +44,35 @@ class _SearchViewState extends State<SearchView> {
       });
     } catch (e) {
       print("Error fetching patients: $e");
+    } finally {
+      setState(() {
+        isLoading = false; // Stop loading
+      });
     }
   }
 
   void filterPatients() {
     setState(() {
-      log('Filtering patients...\nName: ${nameController.text}\nID: ${idController.text}\nGender: $selectedGender\nDisease: $selectedDisease\nAge: ${ageRange.start} - ${ageRange.end}');
-      log('Records: $records');
-
-      filteredPatients = records.where((record) {
-        // Extract the 'patient' object from the 'record' map
+      // Filter logic remains unchanged
+      final filtered = records.where((record) {
         final patient = record['patient'];
 
-        // Ensure that the patient's fields exist and are not null
-        final String patientName = (patient['firstName'] ?? '').toLowerCase();
+        final String patientFirstName =
+            (patient['firstName'] ?? '').toLowerCase();
+        final String patientLastName =
+            (patient['lastName'] ?? '').toLowerCase();
+        final String patientFullName = '$patientFirstName $patientLastName';
         final String searchName = nameController.text.toLowerCase();
-        final String patientId = (patient['id'] ?? '').toString();
+
+        final String patientId = (patient['id'] ?? '').toString().toLowerCase();
+        final String searchId = idController.text.toLowerCase();
+
         final String patientGender = (patient['gender'] ?? '').toString();
         final int patientAge = patient['age'] ?? 0;
 
-        // Perform the filtering checks
         bool matchesName =
-            nameController.text.isEmpty || patientName.contains(searchName);
-        bool matchesId =
-            idController.text.isEmpty || patientId == idController.text;
+            searchName.isEmpty || patientFullName.contains(searchName);
+        bool matchesId = searchId.isEmpty || patientId.contains(searchId);
         bool matchesGender =
             selectedGender == null || patientGender == selectedGender;
         bool matchesDisease = selectedDisease == null ||
@@ -78,16 +86,16 @@ class _SearchViewState extends State<SearchView> {
             matchesDisease &&
             matchesAge;
       }).toList();
+
+      filteredPatients = filtered;
     });
   }
 
-// Helper function to check if any of the patient's diagnoses match the selected disease
   bool _matchesDisease(List diagnosisList, String? selectedDisease) {
     if (selectedDisease == null || diagnosisList.isEmpty) {
-      return true; // No disease filter applied or no diagnoses available
+      return true;
     }
 
-    // Check if any diagnosis matches the selected disease
     return diagnosisList.any((diagnosis) {
       final diagnosisLabel = (diagnosis['label'] ?? '').toLowerCase();
       return diagnosisLabel.contains(selectedDisease.toLowerCase());
@@ -152,44 +160,40 @@ class _SearchViewState extends State<SearchView> {
             TextField(
               controller: idController,
               decoration: const InputDecoration(labelText: 'Search by ID'),
-              keyboardType: TextInputType.number,
               onChanged: (value) => filterPatients(),
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: filteredPatients.isEmpty
-                  ? const Center(child: Text('No patients found.'))
-                  : PatientList(patients: filteredPatients),
+              child: isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator()) // Show loader
+                  : filteredPatients.isEmpty
+                      ? const Center(child: Text('No patients found.'))
+                      : PatientList(patients: filteredPatients),
             ),
+            // this button is for adding random patients
             ElevatedButton(
-                onPressed: () {
-                  auth.addPatient(
-                    'John',
-                    'Doe',
-                    Timestamp.fromDate(DateTime(1990, 5, 20)),
-                    'Male',
-                    '1234567890',
-                    21,
-                    [
-                      {
-                        'Diagnosis': 'Fibrosis 92%',
-                        'Diagnosis_Date': Timestamp.fromDate(DateTime.now()),
-                        'Image_Path': '/path/to/image1',
-                        'label': 'Fibrosis',
-                      },
-                      {
-                        'Diagnosis': 'Hernia 52%',
-                        'Diagnosis_Date': Timestamp.fromDate(DateTime.now()),
-                        'Image_Path': '/path/to/image2',
-                        'label': 'Hernia',
-                      }
-                    ],
-                  );
-                },
-                child: Text('Add Patient'))
+              onPressed: () {
+                final randomPatientGenerator = RandomPatientGenerator();
+                final randomPatient =
+                    randomPatientGenerator.generateRandomPatient();
+
+                auth.createNewPatient(
+                  randomPatient['firstName'],
+                  randomPatient['lastName'],
+                  randomPatient['dateOfBirth'],
+                  randomPatient['gender'],
+                  randomPatient['phone'],
+                  randomPatient['age'],
+                );
+                _fetchPatients();
+              },
+              child: const Text('Add Random Patient'),
+            ),
           ],
         ),
       ),
     );
   }
 }
+

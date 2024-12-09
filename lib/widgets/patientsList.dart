@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/widgets/miniPatientCard.dart';
 
 class PatientList extends StatelessWidget {
   final List<Map<String, dynamic>> patients;
+  final AuthService _auth = AuthService();
 
-  const PatientList({super.key, required this.patients});
+  PatientList({super.key, required this.patients});
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,19 @@ class PatientList extends StatelessWidget {
           birthDate: patient['birthDate'],
           phoneNumber: patient['phoneNumber'] ?? 'N/A',
           disease: diagnosisSummary,
+          onDismissed: () {
+            // Perform deletion
+            _auth.deletePatient(patient['id']);
+
+            // Show feedback
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                    "Patient ${patient['firstName']} ${patient['lastName']} deleted."),
+                duration: Duration(seconds: 1),
+              ),
+            );
+          },
         );
       },
     );
