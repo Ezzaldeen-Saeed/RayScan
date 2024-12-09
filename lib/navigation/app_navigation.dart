@@ -16,6 +16,7 @@ import 'package:testnav/views/wrapper/main_wrapper.dart';
 //  - /login
 //  - /signup
 //  - /home
+//  - /home/latestPatientProfile_subview
 //  - /search
 //  - /search/patientProfile_subview
 //  - /profile
@@ -126,6 +127,37 @@ class AppNavigation {
                 name: "Home",
                 builder: (BuildContext context, GoRouterState state) =>
                     HomeView(),
+                routes: [
+                  // Patient Profile Subview
+                  GoRoute(
+                    path: "latestPatientProfile_subview",
+                    name: "Latest patient Profile Page",
+                    pageBuilder: (context, state) {
+                      // Pass the state to the widget
+                      return CustomTransitionPage<void>(
+                        key: state.pageKey,
+                        child: patientProfile_subview(
+                          data: state.extra
+                              as Map<String, dynamic>?, // Pass the extra data
+                        ),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) =>
+                            FadeUpwardsPageTransitionsBuilder()
+                                .buildTransitions(
+                          null,
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

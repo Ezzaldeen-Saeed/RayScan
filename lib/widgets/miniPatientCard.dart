@@ -65,7 +65,9 @@ class PatientProfileCard extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         context.go(
-          '/search/patientProfile_subview',
+          isDismissable
+              ? '/search/patientProfile_subview'
+              : '/home/latestPatientProfile_subview',
           extra: {
             'id': id,
             'gender': gender,

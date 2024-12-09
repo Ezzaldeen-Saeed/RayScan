@@ -28,10 +28,10 @@ class _SearchViewState extends State<SearchView> {
   @override
   void initState() {
     super.initState();
-    _fetchPatients();
+    fetchPatients();
   }
 
-  Future<void> _fetchPatients() async {
+  Future<void> fetchPatients() async {
     setState(() {
       isLoading = true; // Start loading
     });
@@ -139,7 +139,7 @@ class _SearchViewState extends State<SearchView> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _fetchPatients,
+            onPressed: fetchPatients,
           ),
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -186,7 +186,7 @@ class _SearchViewState extends State<SearchView> {
                   randomPatient['phone'],
                   randomPatient['age'],
                 );
-                _fetchPatients();
+                fetchPatients();
               },
               child: const Text('Add Random Patient'),
             ),

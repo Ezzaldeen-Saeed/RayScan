@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/utils/Utility.dart';
 import 'package:testnav/widgets/button.dart';
@@ -25,9 +26,9 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
   final TextEditingController _genderController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
 
-  SignUpAndLogin signupLogin = SignUpAndLogin();
-  bool _isSigningOut = false; // Track sign-out state
-  List<bool> _isSelected = [true, false]; // Initialize _isSelected
+  final SignUpAndLogin signupLogin = SignUpAndLogin();
+  final List<bool> _isSelected = [true, false]; // Initialize _isSelected
+  final AuthService _auth = AuthService();
 
   @override
   void dispose() {
@@ -84,102 +85,24 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
                       ),
                     ),
                     const SizedBox(height: 15),
-                    CustomToggleButtons(
-                      labels: ['Profile Data', 'Diagnosis Data'],
-                      isSelected: _isSelected,
-                      onToggle: (int index) {
-                        setState(() {
-                          for (int i = 0; i < _isSelected.length; i++) {
-                            _isSelected[i] = i == index;
-                          }
-                        });
-                      },
-                      selectedColor: Colors.white,
-                      borderColor: Colors.blue,
-                      padding: 16.0,
-                    ),
-                    const SizedBox(height: 15),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          CustomTextField(
-                            hint: "First Name",
-                            label: "What's your first name?",
-                            controller: _firstNameController,
-                            outLine: false,
-                          ),
-                          const SizedBox(height: 20),
-                          CustomTextField(
-                            hint: "Last Name",
-                            label: "What's your last name?",
-                            controller: _lastNameController,
-                            outLine: false,
-                          ),
-                          const SizedBox(height: 20),
-                          CustomTextField(
-                            hint: "Phone Number",
-                            isIconed: true,
-                            icon: const Icon(Icons.phone),
-                            label: "Phone Number",
-                            controller: _phoneNumberController,
-                            outLine: false,
-                          ),
-                          const SizedBox(height: 20),
-                          CustomSelectBox(
-                            items: ['Male', 'Female'],
-                            label: "Gender",
-                            hint: "Choose one",
-                            selectedValue: _genderController.text,
-                            onChanged: (value) {
-                              setState(() {
-                                _genderController.text = value!;
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 20),
-                          CustomDateSelection(
-                            label: "What is your date of birth?",
-                            selectedDate: _dobController.text.isNotEmpty
-                                ? DateFormat('dd/MM/yyyy').parse(_dobController
-                                    .text) // Updated to match the input format
-                                : null,
-                            onDateSelected: (date) {
-                              setState(() {
-                                _dobController.text = DateFormat('dd/MM/yyyy')
-                                    .format(date); // Keep consistent formatting
-                              });
-                            },
-                            isIconed: true,
-                            icon: const Icon(Icons.calendar_today),
-                            backgroundColor: Colors.grey[200]!,
-                            focusedBorderColor: Colors.blue,
-                          ),
-                          const SizedBox(height: 45),
-                          Center(
-                            child: CustomButton(
-                                label: 'Update Profile',
-                                onPressed: () => updateProfile(context)),
-                          ),
-                          const SizedBox(height: 10),
-                          Center(
-                            child: CustomButton(
-                              label: "Sign Out",
-                              BGColor: Colors.red,
-                              size: 200,
-                              isDisabled: _isSigningOut,
-                              // Disable the button
-                              onPressed: _isSigningOut
-                                  ? null
-                                  : () async {
-                                      await _handleSignOut(context);
-                                    },
-                            ),
-                          ),
-                        ],
+                    Center(
+                      child: CustomToggleButtons(
+                        labels: ['Profile Data', 'Diagnosis Data'],
+                        isSelected: _isSelected,
+                        onToggle: (int index) {
+                          setState(() {
+                            for (int i = 0; i < _isSelected.length; i++) {
+                              _isSelected[i] = i == index;
+                            }
+                          });
+                        },
+                        selectedColor: Colors.white,
+                        borderColor: Colors.blue,
+                        padding: 16.0,
                       ),
                     ),
+                    const SizedBox(height: 15),
+                    _isSelected[0] ? patientDetails() : DiagnosisData(),
                   ],
                 ),
               ),
@@ -188,33 +111,126 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
         ));
   }
 
-  Future<void> _handleSignOut(BuildContext context) async {
-    setState(() {
-      _isSigningOut = true; // Disable the button
-    });
+  patientDetails() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CustomTextField(
+            hint: "First Name",
+            label: "What's your first name?",
+            controller: _firstNameController,
+            outLine: false,
+          ),
+          const SizedBox(height: 20),
+          CustomTextField(
+            hint: "Last Name",
+            label: "What's your last name?",
+            controller: _lastNameController,
+            outLine: false,
+          ),
+          const SizedBox(height: 20),
+          CustomTextField(
+            hint: "Phone Number",
+            isIconed: true,
+            icon: const Icon(Icons.phone),
+            label: "Phone Number",
+            controller: _phoneNumberController,
+            outLine: false,
+          ),
+          const SizedBox(height: 20),
+          CustomSelectBox(
+            items: ['Male', 'Female'],
+            label: "Gender",
+            hint: "Choose one",
+            selectedValue: _genderController.text,
+            onChanged: (value) {
+              setState(() {
+                _genderController.text = value!;
+              });
+            },
+          ),
+          const SizedBox(height: 20),
+          CustomDateSelection(
+            label: "What is your date of birth?",
+            selectedDate: _dobController.text.isNotEmpty
+                ? DateFormat('dd/MM/yyyy').parse(
+                    _dobController.text) // Updated to match the input format
+                : null,
+            onDateSelected: (date) {
+              setState(() {
+                _dobController.text = DateFormat('dd/MM/yyyy')
+                    .format(date); // Keep consistent formatting
+              });
+            },
+            isIconed: true,
+            icon: const Icon(Icons.calendar_today),
+            backgroundColor: Colors.grey[200]!,
+            focusedBorderColor: Colors.blue,
+          ),
+          const SizedBox(height: 45),
+          Center(
+            child: CustomButton(
+                label: 'Update Profile',
+                onPressed: () => updateProfile(context)),
+          ),
+          const SizedBox(height: 10),
+          Center(
+            child: CustomButton(
+              label: "Delete Patient",
+              BGColor: Colors.red,
+              size: 200,
+              isDisabled: false,
+              // Disable the button
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (dialogContext) => AlertDialog(
+                    title: const Text('Delete Patient'),
+                    content: const Text(
+                        'Are you sure you want to delete this patient?'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop(); // Close the dialog
+                        },
+                        child: const Text('No'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(dialogContext).pop(); // Close the dialog
+                          // Show feedback using the correct context
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                "Patient ${widget.data?['fName']} ${widget.data?['lName']} deleted.",
+                              ),
+                              duration: const Duration(seconds: 1),
+                            ),
+                          );
+                          // Perform deletion
+                          _auth.deletePatient(widget.data?['id']);
+                          // Navigate back to the previous screen
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('Yes'),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-    bool signOutSuccess = await signupLogin.signOut(context);
-
-    if (signOutSuccess) {
-      // Sign out logic
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Signed out successfully!'),
-          backgroundColor: successSnackBarBG,
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Sign out failed!'),
-          backgroundColor: errorSnackBarBG,
-        ),
-      );
-    }
-
-    setState(() {
-      _isSigningOut = false; // Re-enable the button
-    });
+  DiagnosisData() {
+    return Center(
+      child: Text("Diagnosis Data"),
+    );
   }
 
   void updateProfile(BuildContext context) {
