@@ -8,6 +8,8 @@ import 'package:testnav/views/addPatient/imageUploadPage_view.dart';
 import 'package:testnav/views/home/home_view.dart';
 import 'package:testnav/views/profile/About.dart';
 import 'package:testnav/views/profile/help.dart';
+import 'package:testnav/views/profile/notification.dart';
+import 'package:testnav/views/profile/passwordManager.dart';
 import 'package:testnav/views/profile/profile_view.dart';
 import 'package:testnav/views/profile/settings.dart';
 import 'package:testnav/views/search/patientProfile_view.dart';
@@ -25,6 +27,8 @@ import 'package:testnav/views/wrapper/main_wrapper.dart';
 //  - /search/patientProfile_subview
 //  - /profile
 //  - /profile/Settings_subview
+//  - /profile/Settings_subview/NotificationSettings_subview
+//  - /profile/Settings_subview/PasswordManager_subview
 //  - /profile/Help_subview
 //  - /profile/About_subview
 //  - /addPatient
@@ -247,6 +251,59 @@ class AppNavigation {
                         ),
                       );
                     },
+                    routes: [
+                      // Notification Settings Subview
+                      GoRoute(
+                        path: "NotificationSettings_subview",
+                        name: "Notification Settings Page",
+                        pageBuilder: (context, state) {
+                          // Pass the state to the widget
+                          return CustomTransitionPage<void>(
+                            key: state.pageKey,
+                            child: NotificationManager_subview(),
+                            transitionsBuilder: (
+                              context,
+                              animation,
+                              secondaryAnimation,
+                              child,
+                            ) =>
+                                FadeUpwardsPageTransitionsBuilder()
+                                    .buildTransitions(
+                              null,
+                              context,
+                              animation,
+                              secondaryAnimation,
+                              child,
+                            ),
+                          );
+                        },
+                      ),
+                      GoRoute(
+                        path: "PasswordManager_subview",
+                        name: "Password Manager Page",
+                        pageBuilder: (context, state) {
+                          // Pass the state to the widget
+                          return CustomTransitionPage<void>(
+                            key: state.pageKey,
+                            child: Passwordmanager_subview(),
+                            transitionsBuilder: (
+                              context,
+                              animation,
+                              secondaryAnimation,
+                              child,
+                            ) =>
+                                FadeUpwardsPageTransitionsBuilder()
+                                    .buildTransitions(
+                              null,
+                              context,
+                              animation,
+                              secondaryAnimation,
+                              child,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
                   ),
                   // Notification Manager Subview
                   GoRoute(

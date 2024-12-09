@@ -19,6 +19,8 @@ const Color cardDisease3 = Color.fromRGBO(215, 255, 215, 1);
 const Color cardDisease4 = Color.fromRGBO(215, 215, 255, 1);
 const Color cardDisease5 = Color.fromRGBO(255, 255, 215, 1);
 
+const Color textFieldBGColor = Color(0xFFDCEAFA);
+
 //--------------------------------------------------- Fonts / Font Sizes ---------------------------------------------------
 
 const double fontSizeTitle = 24;
@@ -67,6 +69,21 @@ CustomText(String text, double Type) {
           ),
         ),
       );
+    case 1.2:
+      return Text(
+        text
+            .split(' ')
+            .map((word) => word[0].toUpperCase() + word.substring(1))
+            .join(' '),
+        style: GoogleFonts.leagueSpartan(
+          textStyle: TextStyle(
+            fontSize: fontSizeTitle,
+            fontWeight: fontWeightMedium,
+            fontFamily: fontFamily,
+            color: textColorLightMode,
+          ),
+        ),
+      );
     case 2:
       return Text(text,
           style: TextStyle(
@@ -74,6 +91,13 @@ CustomText(String text, double Type) {
               fontWeight: fontWeightMedium,
               fontFamily: fontFamily,
               color: _secondaryColor));
+    case 2.1:
+      return Text(text,
+          style: TextStyle(
+              fontSize: fontSizeSubTitle,
+              fontWeight: fontWeightMedium,
+              fontFamily: fontFamily,
+              color: textColorLightMode));
     case 3:
       return Text(text,
           style: TextStyle(
@@ -82,4 +106,21 @@ CustomText(String text, double Type) {
               fontFamily: fontFamily,
               color: _secondaryColor));
   }
+}
+
+IconText(String text, {required int size}) {
+  return Text(
+    text
+        .split(' ')
+        .map((word) => word[0].toUpperCase() + word.substring(1))
+        .join(' '),
+    style: GoogleFonts.luckiestGuy(
+      textStyle: TextStyle(
+        fontSize: size.toDouble(),
+        fontWeight: fontWeightSimiBold,
+        fontFamily: fontFamily,
+        color: primaryColor,
+      ),
+    ),
+  );
 }

@@ -82,3 +82,79 @@ class CustomTextField extends StatelessWidget {
     );
   }
 }
+
+class CustomTextFieldV2 extends StatefulWidget {
+  const CustomTextFieldV2({
+    super.key,
+    required this.type,
+    this.hint = '*************',
+    this.label = '',
+    this.controller,
+    this.isPassword = false,
+    this.backgroundColor = textFieldBGColor,
+    this.focusedBorderColor = primaryColor,
+    this.keyboardType,
+  });
+
+  final double type;
+  final String hint;
+  final String label;
+  final TextEditingController? controller;
+  final bool isPassword;
+  final Color backgroundColor; // Background color of the text field
+  final Color focusedBorderColor; // Border color when the text field is focused
+  final TextInputType? keyboardType;
+
+  @override
+  State<CustomTextFieldV2> createState() => _CustomTextFieldV2State();
+}
+
+class _CustomTextFieldV2State extends State<CustomTextFieldV2> {
+  bool _obscureText = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.isPassword; // Initialize based on `isPassword`
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      obscuringCharacter: '*',
+      obscureText: widget.isPassword ? _obscureText : false,
+      style: TextStyle(
+        color: primaryColor,
+        fontSize: fontSizeTitle,
+        fontWeight: fontWeightSimiBold,
+      ),
+      decoration: InputDecoration(
+        hintText: widget.hint,
+        hintStyle: TextStyle(
+          color: Colors.grey,
+          fontSize: fontSizeTitle,
+          fontWeight: fontWeightSimiBold,
+        ),
+        filled: true,
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: Icon(
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
+            : null,
+        fillColor: widget.backgroundColor,
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(13),
+        ),
+      ),
+    );
+  }
+}

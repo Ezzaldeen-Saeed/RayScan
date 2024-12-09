@@ -36,7 +36,7 @@ class SignUpAndLogin {
     final user = await _auth.createUserWithEmailAndPassword(
         firstName, lastName, email, password);
     if (user != null) {
-      print("/-/-/-//-/-/-/-//////-/-----/User Created Succesfully");
+      print("User Created Succesfully");
       login(context, email, password);
       return true;
     }
@@ -48,7 +48,7 @@ class SignUpAndLogin {
     final user = await _auth.loginUserWithEmailAndPassword(email, password);
 
     if (user != null) {
-      print("//-//---/--//-/-/-/-User Logged In");
+      print("User Logged In");
       HiveService().setLoginStatus(true);
       Map data = await _auth.getCurrentUserData();
       String fName = data['userFirstName'];

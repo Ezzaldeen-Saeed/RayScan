@@ -153,6 +153,44 @@ class CustomProfileButton extends StatelessWidget {
                 );
               },
             );
+          } else if (label == "Delete Account") {
+            showDialog(
+              context: maincontext,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text("Confirm Delete Account"),
+                  content: Text(
+                      "Are you sure you want to Delete Your Account?\nThe Administrator will review your request and delete your account."),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Dismiss the dialog
+                      },
+                      child: Text("Cancel"),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        Navigator.of(context).pop(); // Dismiss the dialog
+                        bool signOutSuccess = await _handleSignOut(maincontext);
+                        if (signOutSuccess) {
+                          ScaffoldMessenger.of(maincontext).showSnackBar(
+                            SnackBar(
+                              content: Text("Account Deleted Successfully"),
+                              backgroundColor: Colors.green,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(maincontext).showSnackBar(
+                            SnackBar(content: Text("Error Deleting Account")),
+                          );
+                        }
+                      },
+                      child: Text("Delete Account"),
+                    ),
+                  ],
+                );
+              },
+            );
           } else {
             maincontext.go(
               label == "Settings"
@@ -161,7 +199,11 @@ class CustomProfileButton extends StatelessWidget {
                       ? '/profile/Help_subview'
                       : label == "About"
                           ? '/profile/About_subview'
-                          : '/error',
+                          : label == "Notification Settings"
+                              ? '/profile/Settings_subview/NotificationSettings_subview'
+                              : label == "Password Manager"
+                                  ? '/profile/Settings_subview/PasswordManager_subview'
+                                  : '/error',
             );
           }
         },
@@ -197,11 +239,29 @@ class CustomProfileButton extends StatelessWidget {
                                   color: primaryColor,
                                   size: 35,
                                 )
-                              : Icon(
-                                  Icons.error_outline,
-                                  color: primaryColor,
-                                  size: 35,
-                                )
+                              : label == "Notification Settings"
+                                  ? Icon(
+                                      Icons.lightbulb_outline,
+                                      color: primaryColor,
+                                      size: 35,
+                                    )
+                                  : label == "Password Manager"
+                                      ? Icon(
+                                          Icons.key,
+                                          color: primaryColor,
+                                          size: 35,
+                                        )
+                                      : label == "Delete Account"
+                                          ? Icon(
+                                              Icons.delete_forever,
+                                              color: primaryColor,
+                                              size: 35,
+                                            )
+                                          : Icon(
+                                              Icons.error_outline,
+                                              color: primaryColor,
+                                              size: 35,
+                                            )
                 ],
               ),
             ),
@@ -214,6 +274,63 @@ class CustomProfileButton extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class CustomProfileToggle extends StatefulWidget {
+  const CustomProfileToggle({
+    super.key,
+    required this.label,
+    this.onToggle,
+    this.textColor = Colors.black,
+    this.BGColor = primaryColor,
+    this.initialValue = false,
+  });
+
+  final String label;
+  final Color BGColor, textColor;
+  final bool initialValue;
+  final ValueChanged<bool>? onToggle;
+
+  @override
+  _CustomProfileToggleState createState() => _CustomProfileToggleState();
+}
+
+class _CustomProfileToggleState extends State<CustomProfileToggle> {
+  late bool isToggled;
+
+  @override
+  void initState() {
+    super.initState();
+    isToggled = widget.initialValue;
+  }
+
+  void _handleToggle(bool value) {
+    setState(() {
+      isToggled = value;
+    });
+    if (widget.onToggle != null) {
+      widget.onToggle!(value);
+    }
+  }
+
+  @override
+  Widget build(BuildContext mainContext) {
+    return Material(
+      color: Colors.transparent, // To maintain the background color
+      child: Row(
+        children: [
+          CustomText(widget.label, 2.1),
+          const Spacer(),
+          Switch(
+            value: isToggled,
+            onChanged: _handleToggle,
+            activeColor: widget.BGColor,
+            activeTrackColor: widget.BGColor.withOpacity(0.5),
+          ),
+        ],
       ),
     );
   }
