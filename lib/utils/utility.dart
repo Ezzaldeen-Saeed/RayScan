@@ -6,7 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:testnav/Storage/hiveManager.dart';
 import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/main.dart';
-import 'package:testnav/widgets/colors.dart';
+import 'package:testnav/widgets/pallet.dart';
 
 class DarkModeController extends ChangeNotifier {
   bool _isDarkMode = darkMode;

@@ -4,7 +4,7 @@ import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/utils/Utility.dart';
 import 'package:testnav/widgets/button.dart';
-import 'package:testnav/widgets/colors.dart';
+import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/selectbox.dart';
 import 'package:testnav/widgets/selectdate.dart';
 import 'package:testnav/widgets/textfield.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/utils/utility.dart';
 import 'package:testnav/widgets/button.dart';
-import 'package:testnav/widgets/colors.dart';
+import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/textfield.dart';
 
 class SignupView extends StatefulWidget {

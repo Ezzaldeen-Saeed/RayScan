@@ -19,7 +19,7 @@ class MiniProfileCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          profileData.buildProfileImage(45.0),
+          profileData.buildProfileImage(45.0, false),
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

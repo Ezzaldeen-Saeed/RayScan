@@ -2,10 +2,14 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:testnav/main.dart';
 import 'package:testnav/views/addPatient/addPatient_view.dart';
 import 'package:testnav/views/addPatient/imageUploadPage_view.dart';
 import 'package:testnav/views/home/home_view.dart';
+import 'package:testnav/views/profile/About.dart';
+import 'package:testnav/views/profile/help.dart';
 import 'package:testnav/views/profile/profile_view.dart';
+import 'package:testnav/views/profile/settings.dart';
 import 'package:testnav/views/search/patientProfile_view.dart';
 import 'package:testnav/views/search/search_view.dart';
 import 'package:testnav/views/signup_login/login_view.dart';
@@ -20,6 +24,9 @@ import 'package:testnav/views/wrapper/main_wrapper.dart';
 //  - /search
 //  - /search/patientProfile_subview
 //  - /profile
+//  - /profile/Settings_subview
+//  - /profile/Help_subview
+//  - /profile/About_subview
 //  - /addPatient
 //  - /addPatient/imageUpload_subview
 
@@ -29,9 +36,9 @@ class AppNavigation {
   static late String initial;
 
   static Future<void> setInitial() async {
-    // bool isLoggedIn = await hs.isLoggedIn();
-    // initial = isLoggedIn ? "/home" : "/login";
-    initial = "/search";
+    bool isLoggedIn = await hs.isLoggedIn();
+    initial = isLoggedIn ? "/home" : "/login";
+    // initial = "/profile";
     log("Since User Is Logged In Initial Route: $initial");
   }
 
@@ -214,6 +221,86 @@ class AppNavigation {
                 path: '/profile',
                 name: "Profile",
                 builder: (context, state) => ProfileView(),
+                routes: [
+                  // Password Manager Subview
+                  GoRoute(
+                    path: "Settings_subview",
+                    name: "Settings Page",
+                    pageBuilder: (context, state) {
+                      // Pass the state to the widget
+                      return CustomTransitionPage<void>(
+                        key: state.pageKey,
+                        child: Settings_subview(),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) =>
+                            FadeUpwardsPageTransitionsBuilder()
+                                .buildTransitions(
+                          null,
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ),
+                      );
+                    },
+                  ),
+                  // Notification Manager Subview
+                  GoRoute(
+                    path: "Help_subview",
+                    name: "Help Page",
+                    pageBuilder: (context, state) {
+                      // Pass the state to the widget
+                      return CustomTransitionPage<void>(
+                        key: state.pageKey,
+                        child: Help_subview(),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) =>
+                            FadeUpwardsPageTransitionsBuilder()
+                                .buildTransitions(
+                          null,
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ),
+                      );
+                    },
+                  ),
+                  // About Subview
+                  GoRoute(
+                    path: "About_subview",
+                    name: "About Page",
+                    pageBuilder: (context, state) {
+                      // Pass the state to the widget
+                      return CustomTransitionPage<void>(
+                        key: state.pageKey,
+                        child: About_subview(),
+                        transitionsBuilder: (
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ) =>
+                            FadeUpwardsPageTransitionsBuilder()
+                                .buildTransitions(
+                          null,
+                          context,
+                          animation,
+                          secondaryAnimation,
+                          child,
+                        ),
+                      );
+                    },
+                  ),
+                ],
               ),
             ],
           ),

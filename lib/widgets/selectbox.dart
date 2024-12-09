@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:testnav/widgets/colors.dart';
+import 'package:testnav/widgets/pallet.dart';
 
 class CustomSelectBox extends StatelessWidget {
   const CustomSelectBox({

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/auth/auth_service.dart';
-import 'package:testnav/widgets/colors.dart';
+import 'package:testnav/widgets/pallet.dart';
 
 class PatientProfileCard extends StatelessWidget {
   final String id;

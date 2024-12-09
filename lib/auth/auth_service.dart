@@ -13,8 +13,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 // to run NGROK: ngrok http --url=concrete-grub-immensely.ngrok-free.app 5000
 
-final String flaskServerUrl = "https://concrete-grub-immensely.ngrok-free.app";
-final String ngrokAuthKey = "2pDPe8ogpPOBHqz4nBgLkAcDbZ4_82p96Bo7vdpmcvDtKAWFN";
+final String flaskServerUrl = "https://beloved-simply-piglet.ngrok-free.app";
+final String ngrokAuthKey = "2pMS326VkCAcdJvvQsNGyAJbJSq_7oKjcn4FoEvS5ersmd5Ch";
 
 class AuthService {
   final _auth = FirebaseAuth.instance;

@@ -4,7 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:testnav/Storage/hiveManager.dart';
 import 'package:testnav/navigation/app_navigation.dart';
 import 'package:testnav/utils/splashScreen.dart';
-import 'package:testnav/widgets/colors.dart';
+import 'package:testnav/widgets/pallet.dart';
 
 // Hive Service
 final HiveService hs = HiveService();

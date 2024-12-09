@@ -1,23 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:testnav/main.dart';
+import 'package:testnav/widgets/pallet.dart';
 
 class ProfileData {
   // Builds the profile image FutureBuilder
-  Widget buildProfileImage(double radius) {
+  Widget buildProfileImage(double radius, bool isEditable) {
     return FutureBuilder<String>(
       future: hs.getProfileImagePath(),
       builder: (context, snapshot) {
         final imageUrl = snapshot.data ??
             'https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small/profile-icon-design-free-vector.jpg';
-        return CircleAvatar(
-          radius: radius,
-          backgroundColor: Colors.blueAccent,
-          child: CircleAvatar(
-            radius: radius - 3,
-            backgroundImage: snapshot.hasError || !snapshot.hasData
-                ? NetworkImage(imageUrl)
-                : NetworkImage(snapshot.data!),
-          ),
+        return Stack(
+          children: [
+            CircleAvatar(
+              radius: radius - 3,
+              backgroundImage: snapshot.hasError || !snapshot.hasData
+                  ? NetworkImage(imageUrl)
+                  : NetworkImage(snapshot.data!),
+              backgroundColor: Colors.transparent,
+              child: ClipOval(
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.cover,
+                  width: radius * 2,
+                  height: radius * 2,
+                ),
+              ),
+            ),
+            if (isEditable)
+              Positioned(
+                bottom: 10,
+                right: 10, // Changed from left to right
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.blue, // Replace with desired color
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.edit,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         );
       },
     );
@@ -75,6 +105,35 @@ class ProfileData {
             defaultText,
             style: TextStyle(color: currentTextColor),
           );
+        }
+      },
+    );
+  }
+}
+
+class UserNameWidget extends StatelessWidget {
+  const UserNameWidget({super.key});
+
+  // Returns the full name of the user
+  Future<String> getUserFullName() async {
+    String firstName = await hs.getUserFirstName();
+    String lastName = await hs.getUserLastName();
+    return '$firstName $lastName';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: getUserFullName(),
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CustomText("Loading...", 1.1);
+        } else if (snapshot.hasError) {
+          return CustomText("Error: ${snapshot.error}", 1.1);
+        } else if (snapshot.hasData) {
+          return CustomText(snapshot.data!, 1.1);
+        } else {
+          return CustomText("No data available", 1.1);
         }
       },
     );
