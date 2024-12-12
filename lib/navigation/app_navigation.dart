@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/views/addPatient/addPatient_view.dart';
-import 'package:testnav/views/addPatient/imageUploadPage_view.dart';
+import 'package:testnav/views/addPatient/diagnosisDisplayer.dart';
 import 'package:testnav/views/home/home_view.dart';
 import 'package:testnav/views/profile/About.dart';
 import 'package:testnav/views/profile/help.dart';
@@ -100,12 +100,15 @@ class AppNavigation {
                 routes: [
                   // Image Upload Subview
                   GoRoute(
-                    path: "imageUpload_subview",
-                    name: "Image Upload Page",
+                    path: "diagnosisDisplayer_subview",
+                    name: "Diagnosis Displayer Page",
                     pageBuilder: (context, state) {
                       return CustomTransitionPage<void>(
                         key: state.pageKey,
-                        child: ImageUpload_subview(),
+                        child: Diagnosisdisplayer_subView(
+                          data: state.extra
+                              as Map<String, dynamic>?, // Pass the extra data
+                        ),
                         transitionsBuilder: (
                           context,
                           animation,

@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:testnav/auth/auth_service.dart';
@@ -18,11 +19,6 @@ class AddPatientView extends StatefulWidget {
 }
 
 class _AddPatientViewState extends State<AddPatientView> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -79,6 +75,10 @@ class _AddPatientViewState extends State<AddPatientView> {
       'Authorization': ngrokAuthKey,
     };
 
+    setState(() {
+      _isUploading = true;
+    });
+
     try {
       var request = http.MultipartRequest('POST', uri);
       request.headers.addAll(headers);
@@ -107,6 +107,11 @@ class _AddPatientViewState extends State<AddPatientView> {
               if (response.containsKey("message")) {
                 setState(() {
                   _responseMessage = response["message"];
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(_responseMessage),
+                    ),
+                  );
                 });
                 log("Server Response: ${response["message"]}");
 
@@ -114,6 +119,15 @@ class _AddPatientViewState extends State<AddPatientView> {
                 if (response.containsKey("top_predictions")) {
                   _responseMessage = response["top_predictions"];
                   log("Top Predictions: ${response["top_predictions"]}");
+                  context.go("/addPatient/diagnosisDisplayer_subview", extra: {
+                    "data": response["top_predictions"],
+                    "PID": await pid,
+                    "FullName":
+                        "${_firstNameController.text} ${_lastNameController.text}",
+                    "Gender": _selectedGender,
+                    // send the image
+                    "image": _selectedImage!.path,
+                  });
                 }
               } else {
                 log("No message found in the response");
@@ -132,19 +146,11 @@ class _AddPatientViewState extends State<AddPatientView> {
       setState(() {
         _responseMessage = "An error occurred: $e";
       });
+    } finally {
+      setState(() {
+        _isUploading = false;
+      });
     }
-  }
-
-  void _showLoaderDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
-      },
-    );
   }
 
   @override
