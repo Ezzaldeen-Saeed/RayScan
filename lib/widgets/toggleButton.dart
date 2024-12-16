@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:testnav/main.dart';
+import 'package:testnav/widgets/pallet.dart';
 
 class CustomToggleButtons extends StatelessWidget {
   final List<String> labels; // Text labels for each button
@@ -6,49 +8,76 @@ class CustomToggleButtons extends StatelessWidget {
   final void Function(int) onToggle; // Callback when a button is toggled
   final double padding; // Padding for each button
   final Color color; // Default text color
-  final Color fillColor; // Background color for selected buttons
-  final Color borderColor; // Default border color
-  final Color selectedBorderColor; // Border color for selected buttons
   final Color selectedColor; // Text color for selected buttons
-  final Color splashColor; // Splash color for button tap effect
+  final Color fillColor; // Background color for selected buttons
+  final Color borderColor; // Border color for all buttons
   final BorderRadius borderRadius; // Border radius for buttons
-  final BoxConstraints constraints; // Constraints for button size
+  final double spacing; // Space between buttons
+  final int type;
 
   const CustomToggleButtons({
-    Key? key,
+    super.key,
     required this.labels,
     required this.isSelected,
     required this.onToggle,
     this.padding = 16.0,
     this.color = Colors.black,
-    this.fillColor = Colors.grey,
-    this.borderColor = Colors.grey,
-    this.selectedBorderColor = Colors.black,
     this.selectedColor = Colors.white,
-    this.splashColor = Colors.grey,
-    this.borderRadius = const BorderRadius.all(Radius.circular(10)),
-    this.constraints = const BoxConstraints(minWidth: 100, minHeight: 40),
-  }) : super(key: key);
+    this.fillColor = const Color(0xFF4A9FCF),
+    this.borderColor = Colors.transparent,
+    this.borderRadius = const BorderRadius.all(Radius.circular(20)),
+    this.spacing = 10.0,
+    this.type = 1,
+  });
 
+  final BoxConstraints constraints1 =
+      const BoxConstraints(minWidth: 120, minHeight: 40);
+  final BoxConstraints constraints2 =
+      const BoxConstraints(minWidth: 100, minHeight: 25);
   @override
   Widget build(BuildContext context) {
-    return ToggleButtons(
-      children: labels.map((label) {
-        return Padding(
-          padding: EdgeInsets.symmetric(horizontal: padding),
-          child: Text(label),
-        );
-      }).toList(),
-      isSelected: isSelected,
-      color: color,
-      fillColor: fillColor,
-      borderColor: borderColor,
-      selectedBorderColor: selectedBorderColor,
-      selectedColor: selectedColor,
-      splashColor: splashColor,
-      borderRadius: borderRadius,
-      constraints: constraints,
-      onPressed: onToggle,
+    return Container(
+      decoration: BoxDecoration(
+        color: currentBG, // Background color
+        borderRadius: borderRadius,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: List.generate(labels.length, (index) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: index == 0 ? 0 : spacing, // Add spacing between buttons
+            ),
+            child: GestureDetector(
+              onTap: () => onToggle(index),
+              child: Container(
+                padding: type == 1
+                    ? EdgeInsets.symmetric(horizontal: padding, vertical: 10)
+                    : null,
+                constraints: type == 1 ? constraints1 : constraints2,
+                decoration: BoxDecoration(
+                  color: isSelected[index] ? fillColor : unselectedButton,
+                  borderRadius: borderRadius,
+                  border: Border.all(
+                    color: borderColor,
+                    width: 2.0,
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    labels[index],
+                    style: TextStyle(
+                      color: isSelected[index] ? selectedColor : fillColor,
+                      fontSize: type == 1 ? 16 : 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
     );
   }
 }

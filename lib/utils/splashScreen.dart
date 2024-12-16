@@ -22,7 +22,7 @@ class Splashscreen extends StatelessWidget {
       splashIconSize: 500,
       nextScreen: nextScreen,
       backgroundColor: Colors.white,
-      duration: 5000,
+      duration: 500,
     );
   }
 }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 const Color primaryColor = Color(0xFF2C82A7);
-const Color _secondaryColor = Colors.grey;
+const Color secondaryColor = Colors.grey;
 const Color textColorLightMode = Colors.black;
 const Color textColorDarkMode = Colors.white;
 const Color darkModeBG1 = Color(0xFF1e1f22);
@@ -20,6 +20,7 @@ const Color cardDisease4 = Color.fromRGBO(215, 215, 255, 1);
 const Color cardDisease5 = Color.fromRGBO(255, 255, 215, 1);
 
 const Color textFieldBGColor = Color(0xFFDCEAFA);
+const Color unselectedButton = Color(0xFFBDD7E5);
 
 //--------------------------------------------------- Fonts / Font Sizes ---------------------------------------------------
 
@@ -34,7 +35,7 @@ const FontWeight fontWeightSimiBold = FontWeight.w600;
 
 String fontFamily = 'League Spartassn';
 
-CustomText(String text, double Type) {
+CustomText(String text, double Type, {Color? color}) {
   // Type 1 = Title,
   // Type 2 = SubTitle,
   // Type 3 = Text
@@ -50,7 +51,7 @@ CustomText(String text, double Type) {
             fontSize: fontSizeTitle,
             fontWeight: fontWeightSimiBold,
             fontFamily: fontFamily,
-            color: primaryColor,
+            color: color ?? primaryColor,
           ),
         ),
       );
@@ -65,7 +66,7 @@ CustomText(String text, double Type) {
             fontSize: fontSizeTitle,
             fontWeight: fontWeightSimiBold,
             fontFamily: fontFamily,
-            color: textColorLightMode,
+            color: color ?? primaryColor,
           ),
         ),
       );
@@ -80,31 +81,34 @@ CustomText(String text, double Type) {
             fontSize: fontSizeTitle,
             fontWeight: fontWeightMedium,
             fontFamily: fontFamily,
-            color: textColorLightMode,
+            color: color ?? primaryColor,
           ),
         ),
       );
     case 2:
       return Text(text,
           style: TextStyle(
-              fontSize: fontSizeSubTitle,
-              fontWeight: fontWeightMedium,
-              fontFamily: fontFamily,
-              color: _secondaryColor));
+            fontSize: fontSizeSubTitle,
+            fontWeight: fontWeightMedium,
+            fontFamily: fontFamily,
+            color: color ?? primaryColor,
+          ));
     case 2.1:
       return Text(text,
           style: TextStyle(
-              fontSize: fontSizeSubTitle,
-              fontWeight: fontWeightMedium,
-              fontFamily: fontFamily,
-              color: textColorLightMode));
+            fontSize: fontSizeSubTitle,
+            fontWeight: fontWeightMedium,
+            fontFamily: fontFamily,
+            color: color ?? primaryColor,
+          ));
     case 3:
       return Text(text,
           style: TextStyle(
-              fontSize: fontSizeText,
-              fontWeight: fontWeightLight,
-              fontFamily: fontFamily,
-              color: _secondaryColor));
+            fontSize: fontSizeText,
+            fontWeight: fontWeightLight,
+            fontFamily: fontFamily,
+            color: color ?? primaryColor,
+          ));
   }
 }
 

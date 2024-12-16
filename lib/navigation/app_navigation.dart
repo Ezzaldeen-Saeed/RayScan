@@ -2,12 +2,11 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:testnav/main.dart';
 import 'package:testnav/views/addPatient/addPatient_view.dart';
 import 'package:testnav/views/addPatient/diagnosisDisplayer.dart';
 import 'package:testnav/views/home/home_view.dart';
 import 'package:testnav/views/profile/About.dart';
-import 'package:testnav/views/profile/help.dart';
+import 'package:testnav/views/profile/Help/help.dart';
 import 'package:testnav/views/profile/notification.dart';
 import 'package:testnav/views/profile/passwordManager.dart';
 import 'package:testnav/views/profile/profile_view.dart';
@@ -40,9 +39,9 @@ class AppNavigation {
   static late String initial;
 
   static Future<void> setInitial() async {
-    bool isLoggedIn = await hs.isLoggedIn();
-    initial = isLoggedIn ? "/home" : "/login";
-    // initial = "/profile";
+    // bool isLoggedIn = await hs.isLoggedIn();
+    // initial = isLoggedIn ? "/home" : "/login";
+    initial = "/profile/Help_subview";
     log("Since User Is Logged In Initial Route: $initial");
   }
 
