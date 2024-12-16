@@ -122,6 +122,7 @@ class _CustomTextFieldV2State extends State<CustomTextFieldV2> {
   Widget build(BuildContext context) {
     return TextField(
       obscuringCharacter: '*',
+      controller: widget.controller,
       obscureText: widget.isPassword ? _obscureText : false,
       style: TextStyle(
         color: primaryColor,

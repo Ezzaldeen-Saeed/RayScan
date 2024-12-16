@@ -41,7 +41,7 @@ class AppNavigation {
   static Future<void> setInitial() async {
     // bool isLoggedIn = await hs.isLoggedIn();
     // initial = isLoggedIn ? "/home" : "/login";
-    initial = "/profile/Help_subview";
+    initial = "/home";
     log("Since User Is Logged In Initial Route: $initial");
   }
 

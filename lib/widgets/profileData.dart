@@ -112,7 +112,11 @@ class ProfileData {
 }
 
 class UserNameWidget extends StatelessWidget {
-  const UserNameWidget({super.key});
+  final double textType;
+  final Color color;
+
+  const UserNameWidget(
+      {super.key, this.textType = 1.1, this.color = Colors.black});
 
   // Returns the full name of the user
   Future<String> getUserFullName() async {
@@ -127,13 +131,13 @@ class UserNameWidget extends StatelessWidget {
       future: getUserFullName(),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CustomText("Loading...", 1.1);
+          return CustomText("Loading...", textType, color: color);
         } else if (snapshot.hasError) {
-          return CustomText("Error: ${snapshot.error}", 1.1);
+          return CustomText("Error: ${snapshot.error}", textType, color: color);
         } else if (snapshot.hasData) {
-          return CustomText(snapshot.data!, 1.1);
+          return CustomText(snapshot.data!, textType, color: color);
         } else {
-          return CustomText("No data available", 1.1);
+          return CustomText("No data available", textType, color: color);
         }
       },
     );

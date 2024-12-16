@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:testnav/main.dart';
+import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/profileData.dart';
 
 class MiniProfileCard extends StatelessWidget {
@@ -13,36 +14,23 @@ class MiniProfileCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        color: currentBG2,
-        borderRadius: BorderRadius.circular(8),
-      ),
       child: Row(
         children: [
-          profileData.buildProfileImage(45.0, false),
+          profileData.buildProfileImage(35.0, false),
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              profileData.buildUserDataText(
-                futureKey: "userFirstName",
-                prefix: "Welcome, ",
-                defaultText: "No user data available.",
-                isBold: true,
-                fontSize: 20,
-              ),
+              CustomText("Hi, Welcome Back", 3),
               const SizedBox(height: 5),
-              profileData.buildUserDataText(
-                futureKey: "userEmail",
-                defaultText: "No user data available.",
-              ),
+              UserNameWidget(textType: 1),
             ],
           ),
           const Spacer(),
           IconButton(
             onPressed: () {},
             icon: Icon(darkMode ? Icons.dark_mode : Icons.light_mode),
-            color: currentTextColor,
+            color: primaryColor,
           ),
         ],
       ),

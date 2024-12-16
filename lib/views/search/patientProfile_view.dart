@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/utils/Utility.dart';
 import 'package:testnav/widgets/button.dart';
 import 'package:testnav/widgets/pallet.dart';
-import 'package:testnav/widgets/selectbox.dart';
-import 'package:testnav/widgets/selectdate.dart';
 import 'package:testnav/widgets/textfield.dart';
 import 'package:testnav/widgets/toggleButton.dart';
 
@@ -28,6 +25,7 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
 
   final SignUpAndLogin signupLogin = SignUpAndLogin();
   final List<bool> _isSelected = [true, false]; // Initialize _isSelected
+  late List<bool> _isSelected2 = [true, false]; // Initialize _isSelected
   final AuthService _auth = AuthService();
 
   @override
@@ -45,6 +43,7 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
     _lastNameController.text = widget.data?['lName'] ?? '';
     _phoneNumberController.text = widget.data?['phoneNumber'] ?? '';
     _genderController.text = widget.data?['gender'] ?? '';
+    if (widget.data?['gender'] == 'Female') _isSelected2 = [false, true];
     _dobController.text = widget.data?['birthDate'] ?? '';
   }
 
@@ -58,6 +57,24 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
   Widget build(BuildContext context) {
     final String? fname = widget.data?['fName'];
     return Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+          centerTitle: true,
+          title: Text(
+            "Patient Profile",
+            style: TextStyle(
+                color: currentTextColor,
+                fontSize: 24,
+                fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: currentBG,
+          iconTheme: IconThemeData(color: currentTextColor),
+        ),
         backgroundColor: currentBG,
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -67,11 +84,6 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
                 alignment: Alignment.center,
                 child: ListView(
                   children: [
-                    Text("Patient Profile",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'DM Sans')),
                     const SizedBox(height: 20),
                     CircleAvatar(
                       radius: 40,
@@ -96,6 +108,7 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
                             }
                           });
                         },
+                        type: 2,
                         selectedColor: Colors.white,
                         borderColor: Colors.blue,
                         padding: 16.0,
@@ -117,58 +130,70 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomTextField(
-            hint: "First Name",
-            label: "What's your first name?",
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CustomText("First Name", 2),
+          ),
+          CustomTextFieldV2(
+            type: 1.0,
+            isPassword: false,
             controller: _firstNameController,
-            outLine: false,
+            hint: "Joe",
           ),
           const SizedBox(height: 20),
-          CustomTextField(
-            hint: "Last Name",
-            label: "What's your last name?",
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CustomText("Last Name", 2),
+          ),
+          CustomTextFieldV2(
+            type: 1.0,
+            isPassword: false,
             controller: _lastNameController,
-            outLine: false,
+            hint: "Doe",
           ),
           const SizedBox(height: 20),
-          CustomTextField(
-            hint: "Phone Number",
-            isIconed: true,
-            icon: const Icon(Icons.phone),
-            label: "Phone Number",
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CustomText("Phone Number", 2),
+          ),
+          CustomTextFieldV2(
+            type: 1.0,
+            isPassword: false,
             controller: _phoneNumberController,
-            outLine: false,
+            hint: "1234567890",
           ),
           const SizedBox(height: 20),
-          CustomSelectBox(
-            items: ['Male', 'Female'],
-            label: "Gender",
-            hint: "Choose one",
-            selectedValue: _genderController.text,
-            onChanged: (value) {
-              setState(() {
-                _genderController.text = value!;
-              });
-            },
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CustomText("Gender", 2),
+          ),
+          Center(
+            child: CustomToggleButtons(
+              labels: ['Male', 'Female'],
+              isSelected: _isSelected2,
+              onToggle: (int index) {
+                setState(() {
+                  for (int i = 0; i < _isSelected2.length; i++) {
+                    _isSelected2[i] = i == index;
+                  }
+                });
+              },
+              type: 1,
+              selectedColor: Colors.white,
+              borderColor: Colors.blue,
+              padding: 16.0,
+            ),
           ),
           const SizedBox(height: 20),
-          CustomDateSelection(
-            label: "What is your date of birth?",
-            selectedDate: _dobController.text.isNotEmpty
-                ? DateFormat('dd/MM/yyyy').parse(
-                    _dobController.text) // Updated to match the input format
-                : null,
-            onDateSelected: (date) {
-              setState(() {
-                _dobController.text = DateFormat('dd/MM/yyyy')
-                    .format(date); // Keep consistent formatting
-              });
-            },
-            isIconed: true,
-            icon: const Icon(Icons.calendar_today),
-            backgroundColor: Colors.grey[200]!,
-            focusedBorderColor: Colors.blue,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: CustomText("Date of Birth", 2),
           ),
+          CustomTextFieldV2(
+              type: 1.0,
+              isPassword: false,
+              controller: _dobController,
+              hint: "DD/MM/YYYY"),
           const SizedBox(height: 45),
           Center(
             child: CustomButton(

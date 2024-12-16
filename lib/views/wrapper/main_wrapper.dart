@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sliding_clipped_nav_bar/sliding_clipped_nav_bar.dart';
+import 'package:testnav/widgets/pallet.dart';
 
 class MainWrapper extends StatefulWidget {
   const MainWrapper({
@@ -33,7 +34,6 @@ class _MainWrapperState extends State<MainWrapper> {
         child: widget.navigationShell,
       ),
       bottomNavigationBar: SlidingClippedNavBar(
-        backgroundColor: Colors.white,
         onButtonPressed: (index) {
           setState(() {
             selectedIndex = index;
@@ -41,7 +41,9 @@ class _MainWrapperState extends State<MainWrapper> {
           _goBranch(selectedIndex);
         },
         iconSize: 30,
-        activeColor: Colors.black,
+        backgroundColor: primaryColor,
+        inactiveColor: Colors.white,
+        activeColor: Colors.white,
         selectedIndex: selectedIndex,
         barItems: [
           BarItem(

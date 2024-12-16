@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/utils/Utility.dart';
-import 'package:testnav/widgets/miniPatientCard.dart';
 import 'package:testnav/widgets/miniProfileCard.dart';
 
 class HomeView extends StatelessWidget {
@@ -30,24 +28,14 @@ class HomeView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Latest Patients:',
+                    'Latest Patient:',
                     style: TextStyle(
                       color: currentTextColor,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  PatientProfileCard(
-                      id: "1",
-                      fName: "John",
-                      lName: "Doe",
-                      gender: "Male",
-                      age: 21,
-                      birthDate: Timestamp.now(),
-                      phoneNumber: "1234567890",
-                      disease: 'Covid-19',
-                      onDismissed: () {},
-                      isDismissable: false),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),

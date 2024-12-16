@@ -48,6 +48,15 @@ class _Passwordmanager_subviewState extends State<Passwordmanager_subview> {
               child: CustomText("Confirm New Password", 1.2),
             ),
             CustomTextFieldV2(type: 1.0, isPassword: true),
+            Spacer(),
+            ElevatedButton(
+              onPressed: () {},
+              child: CustomText("Save Changes", 1.2, color: Colors.white),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                minimumSize: Size(double.infinity, 50),
+              ),
+            ),
           ],
         ),
       ),

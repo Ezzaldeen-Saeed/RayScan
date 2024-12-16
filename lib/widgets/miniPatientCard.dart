@@ -56,12 +56,12 @@ class PatientProfileCard extends StatelessWidget {
             onDismissed: (direction) {
               onDismissed(); // Call the callback
             },
-            child: patientData(context, formattedBirthDate),
+            child: _patientData(context, formattedBirthDate),
           )
-        : patientData(context, formattedBirthDate);
+        : _patientData(context, formattedBirthDate);
   }
 
-  patientData(BuildContext context, String formattedBirthDate) {
+  _patientData(BuildContext context, String formattedBirthDate) {
     return GestureDetector(
       onTap: () {
         context.go(
