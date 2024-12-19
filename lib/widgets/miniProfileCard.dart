@@ -8,7 +8,8 @@ class MiniProfileCard extends StatelessWidget {
 
   final void Function()? onPressed;
 
-  final ProfileData profileData = ProfileData();
+  final ProfileImage profileData =
+      ProfileImage(radius: 63.0, isEditable: false);
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class MiniProfileCard extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          profileData.buildProfileImage(35.0, false),
+          profileData,
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

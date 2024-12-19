@@ -76,64 +76,54 @@ class HelpFAQData {
       }
     ],
   };
+
+  static List<Map<String, String>> getQuestions(String category) {
+    return helpTopics[category] ?? [];
+  }
 }
 
 class HelpFAQWidget extends StatelessWidget {
-  final String category;
+  final List<Map<String, String>> questions;
 
-  const HelpFAQWidget({Key? key, required this.category}) : super(key: key);
+  const HelpFAQWidget({Key? key, required this.questions}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> questions =
-        HelpFAQData.helpTopics[category] ?? [];
-
     return ListView.builder(
-      key: ValueKey(category),
       shrinkWrap: true,
       physics: const BouncingScrollPhysics(),
       itemCount: questions.length,
       itemBuilder: (context, index) {
         final question = questions[index]['q']!;
         final answer = questions[index]['a']!;
-
         return Card(
           margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           elevation: 2,
-          child: Theme(
-            data: Theme.of(context).copyWith(
-              dividerColor: Colors.transparent,
-            ),
-            child: ExpansionTile(
-              key: ValueKey('$category-$index'),
-              // Unique key for each tile
-              tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-              collapsedIconColor: const Color(0xFF4A9FCF),
-              title: Text(
-                question,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF4A9FCF),
-                ),
+          child: ExpansionTile(
+            title: Text(
+              question,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF4A9FCF),
               ),
-              children: [
-                Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Text(
-                    answer,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black87,
-                    ),
+            ),
+            children: [
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  answer,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.black87,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

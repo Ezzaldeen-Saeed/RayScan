@@ -73,7 +73,13 @@ class HiveService {
 
   Future<String> getProfileImagePath() async {
     final box = await Hive.openBox('userBox');
-    return box.get('profileImagePath');
+    return box.get('profileImagePath') ??
+        'assets/others/defaultProfileImage.png';
+  }
+
+  Future<void> setProfileImagePath(String path) async {
+    final box = await Hive.openBox('userBox');
+    await box.put('profileImagePath', path);
   }
 
   // Clear user data

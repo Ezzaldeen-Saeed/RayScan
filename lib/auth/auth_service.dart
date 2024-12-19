@@ -30,11 +30,7 @@ class AuthService {
 
       // Save additional user data in Realtime Database
       await _firestore.collection('Users').doc(userId).set({
-        'fName': fName,
-        'lName': lName,
-        'profileImagePath':
-            'https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small/profile-icon-design-free-vector.jpg',
-      });
+        'fName': fName, 'lName': lName});
 
       log("User registered and data saved successfully.");
       return cred.user;
@@ -66,13 +62,31 @@ class AuthService {
           'userFirstName': doc['fName'],
           'userLastName': doc['lName'],
           'email': user.email,
-          'profileImagePath': doc['profileImagePath']
         };
       }
     } catch (e) {
       log("Error in getCurrentUserName: $e, Type: ${e.runtimeType}");
     }
     return {};
+  }
+
+  //this method is for changing the password of the user by sending the current password and the new password
+  Future<bool> changePassword(
+      String currentPassword, String newPassword) async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final cred = EmailAuthProvider.credential(
+            email: user.email!, password: currentPassword);
+        await user.reauthenticateWithCredential(cred);
+        await user.updatePassword(newPassword);
+        log("Password changed successfully.");
+        return true;
+      }
+    } catch (e) {
+      log("Error in changePassword: $e, Type: ${e.runtimeType}");
+    }
+    return false;
   }
 
   Future<void> signout() async {

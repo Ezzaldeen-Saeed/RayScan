@@ -7,14 +7,14 @@ import 'package:testnav/widgets/profileData.dart';
 class ProfileView extends StatefulWidget {
   ProfileView({super.key});
 
-  final ProfileData profileData = ProfileData();
+  final ProfileImage profileData = ProfileImage(radius: 63.0, isEditable: true);
+  final ProfileData miniProfileCard = ProfileData();
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
 }
 
 class _ProfileViewState extends State<ProfileView> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,14 +28,11 @@ class _ProfileViewState extends State<ProfileView> {
                 "My Profile",
                 1,
               )),
-              Center(child: widget.profileData.buildProfileImage(63.0, true)),
+              Center(child: widget.profileData),
               const SizedBox(height: 10),
               Center(child: UserNameWidget()),
               Center(
-                child: widget.profileData.buildUserDataText(
-                  futureKey: "userEmail",
-                  fontSize: 16,
-                ),
+                child: widget.miniProfileCard.buildUserEmail(),
               ),
               const SizedBox(height: 96),
               Padding(

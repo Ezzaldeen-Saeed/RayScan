@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/views/profile/Help/data.dart';
 import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/toggleButton.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class Help_subview extends StatefulWidget {
   const Help_subview({super.key});
@@ -15,6 +15,34 @@ class Help_subview extends StatefulWidget {
 class _HelpSubviewState extends State<Help_subview> {
   final List<bool> _isSelected = [true, false];
   final List<bool> _isSelected2 = [true, false, false];
+  double boxHeight = 220;
+  final TextEditingController _searchController = TextEditingController();
+
+  String _searchQuery = "";
+  List<Map<String, String>> _filteredQuestions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(() {
+      setState(() {
+        _searchQuery = _searchController.text;
+        _filterQuestions();
+      });
+    });
+    _filterQuestions(); // Initial filtering
+  }
+
+  void _filterQuestions() {
+    final currentCategory =
+        HelpFAQData.helpTopics.keys.toList()[_isSelected2.indexOf(true)];
+    final allQuestions = HelpFAQData.helpTopics[currentCategory] ?? [];
+    _filteredQuestions = allQuestions
+        .where((q) =>
+            q['q']!.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            q['a']!.toLowerCase().contains(_searchQuery.toLowerCase()))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +50,11 @@ class _HelpSubviewState extends State<Help_subview> {
       backgroundColor: currentBG,
       body: ListView(
         children: [
-          // Rounded rectangle background with AppBar and search area
           Container(
-            height: 240, // Controls height for AppBar + search area
+            height: boxHeight,
             decoration: BoxDecoration(
-              color: const Color(0xFF4A9FCF), // Background color
-              borderRadius: BorderRadius.only(
+              color: const Color(0xFF4A9FCF),
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(30.0),
                 bottomRight: Radius.circular(30.0),
               ),
@@ -35,19 +62,15 @@ class _HelpSubviewState extends State<Help_subview> {
             child: SafeArea(
               child: Column(
                 children: [
-                  // AppBar Title
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
                       children: [
-                        // Back Button
                         IconButton(
                           icon: const Icon(Icons.arrow_back_ios,
                               color: Colors.white),
                           onPressed: () => Navigator.pop(context),
                         ),
-
-                        // Centered Title
                         Expanded(
                           child: Center(
                             child: CustomText(
@@ -57,44 +80,42 @@ class _HelpSubviewState extends State<Help_subview> {
                             ),
                           ),
                         ),
-
-                        // Placeholder for symmetry
-                        SizedBox(
-                          width: 48, // Equal to the width of the IconButton
+                        const SizedBox(
+                          width: 48,
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 10),
-
-                  // Subtitle
                   CustomText("How Can We Help You", 3, color: Colors.white),
-
                   const SizedBox(height: 20),
-
-                  // Search Bar
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                  _isSelected[1]
+                      ? const SizedBox()
+                      : Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
                     child: Container(
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(25.0),
-                        boxShadow: [
-                          BoxShadow(
+                              boxShadow: const [
+                                BoxShadow(
                             color: Colors.black26,
                             blurRadius: 5,
                             offset: Offset(0, 3),
                           ),
                         ],
                       ),
-                      child: const TextField(
-                        decoration: InputDecoration(
+                            child: TextField(
+                              controller: _searchController,
+                              decoration: InputDecoration(
                           hintText: "Search...",
                           hintStyle: TextStyle(color: secondaryColor),
-                          prefixIcon: Icon(Icons.search, color: primaryColor),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.symmetric(vertical: 15.0),
-                        ),
+                                prefixIcon:
+                                    Icon(Icons.search, color: primaryColor),
+                                border: InputBorder.none,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(vertical: 15.0),
+                              ),
                       ),
                     ),
                   ),
@@ -102,10 +123,7 @@ class _HelpSubviewState extends State<Help_subview> {
               ),
             ),
           ),
-
           const SizedBox(height: 33),
-
-          // FAQ & Contact Us Section
           Center(
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -118,6 +136,7 @@ class _HelpSubviewState extends State<Help_subview> {
                       setState(() {
                         for (int i = 0; i < _isSelected.length; i++) {
                           _isSelected[i] = i == index;
+                          boxHeight = _isSelected[0] ? 220 : 130;
                         }
                       });
                     },
@@ -127,8 +146,7 @@ class _HelpSubviewState extends State<Help_subview> {
               ),
             ),
           ),
-          // Body Content
-          _isSelected[0] ? _FAQ_tab() : _contactUsTab(),
+          _isSelected[0] ? _FAQ_tab() : _contactUsTab(context),
         ],
       ),
     );
@@ -137,16 +155,14 @@ class _HelpSubviewState extends State<Help_subview> {
   Widget _FAQ_tab() {
     final List<String> labels = HelpFAQData.helpTopics.keys.toList();
     return Padding(
-      padding: const EdgeInsets.all(20.0), // Optional padding for spacing
+      padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Center(
-              // Center the content inside the scroll view
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                // Center the Row content
                 children: [
                   CustomToggleButtons(
                     labels: labels,
@@ -156,6 +172,7 @@ class _HelpSubviewState extends State<Help_subview> {
                         for (int i = 0; i < _isSelected2.length; i++) {
                           _isSelected2[i] = i == index;
                         }
+                        _filterQuestions(); // Update the filtered questions
                       });
                     },
                     padding: 16.0,
@@ -166,19 +183,19 @@ class _HelpSubviewState extends State<Help_subview> {
             ),
           ),
           const SizedBox(height: 20),
-          HelpFAQWidget(category: labels[_isSelected2.indexOf(true)]),
+          HelpFAQWidget(questions: _filteredQuestions),
         ],
       ),
     );
   }
 
-  Widget _contactUsTab() {
+  Widget _contactUsTab(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
         children: [
           _listTile(Icons.headset_mic, "Customer Service",
-              "mailto:rayscanmobileapp@gmail.com"),
+              "rayscanmobileapp@gmail.com"),
           _listTile(Icons.public, "Website", "https://www.example.com"),
           _listTile(Icons.phone, "Whatsapp", "https://wa.me/919999999999"),
           _listTile(Icons.facebook, "Facebook",
@@ -190,7 +207,7 @@ class _HelpSubviewState extends State<Help_subview> {
     );
   }
 
-  Widget _listTile(IconData icon, String title, String url) {
+  Widget _listTile(IconData icon, String title, String data) {
     return Theme(
       data: ThemeData().copyWith(dividerColor: Colors.transparent),
       child: ListTile(
@@ -204,33 +221,15 @@ class _HelpSubviewState extends State<Help_subview> {
         ),
         trailing: const Icon(Icons.keyboard_arrow_right_rounded,
             color: Colors.black54),
-        onTap: () => _launchUrl(url),
+        onTap: () => _copyInfo(data),
       ),
     );
   }
 
-  Future<void> _launchUrl(String url) async {
-    try {
-      final Uri uri = Uri.parse(url);
-
-      // Debugging: Print the URI being launched
-      debugPrint('Attempting to launch: $uri');
-
-      // Check if the URL can be launched
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(
-          uri,
-          mode: LaunchMode.externalApplication, // Ensures external app is used
-        );
-      } else {
-        throw 'Cannot launch $url. Ensure the app to handle this action is installed.';
-      }
-    } catch (e) {
-      debugPrint('Error launching URL: $e');
-      // Show user-friendly error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: Could not open the link.')),
-      );
-    }
+  Future<void> _copyInfo(String data) async {
+    Clipboard.setData(ClipboardData(text: data));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Copied to Clipboard")),
+    );
   }
 }

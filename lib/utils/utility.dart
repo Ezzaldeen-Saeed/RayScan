@@ -53,7 +53,7 @@ class SignUpAndLogin {
       Map data = await _auth.getCurrentUserData();
       String fName = data['userFirstName'];
       String lName = data['userLastName'];
-      String profileImagePath = data['profileImagePath'];
+      String profileImagePath = await HiveService().getProfileImagePath();
       HiveService().saveUserData(fName, lName, email, profileImagePath);
       context.go('/home');
       return true;

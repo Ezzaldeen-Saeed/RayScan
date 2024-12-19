@@ -1,86 +1,115 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/widgets/pallet.dart';
 
-class ProfileData {
-  // Builds the profile image FutureBuilder
-  Widget buildProfileImage(double radius, bool isEditable) {
-    return FutureBuilder<String>(
-      future: hs.getProfileImagePath(),
-      builder: (context, snapshot) {
-        final imageUrl = snapshot.data ??
-            'https://static.vecteezy.com/system/resources/thumbnails/005/544/718/small/profile-icon-design-free-vector.jpg';
-        return Stack(
-          children: [
-            CircleAvatar(
-              radius: radius - 3,
-              backgroundImage: snapshot.hasError || !snapshot.hasData
-                  ? NetworkImage(imageUrl)
-                  : NetworkImage(snapshot.data!),
-              backgroundColor: Colors.transparent,
-              child: ClipOval(
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  width: radius * 2,
-                  height: radius * 2,
+class ProfileImage extends StatefulWidget {
+  final double radius;
+  final bool isEditable;
+
+  const ProfileImage({
+    Key? key,
+    required this.radius,
+    required this.isEditable,
+  }) : super(key: key);
+
+  @override
+  _ProfileImageState createState() => _ProfileImageState();
+}
+
+class _ProfileImageState extends State<ProfileImage> {
+  final ImagePicker _picker = ImagePicker();
+  String? _imagePath;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfileImage();
+  }
+
+  // Load the profile image from the saved path
+  Future<void> _loadProfileImage() async {
+    final path = await hs.getProfileImagePath();
+    setState(() {
+      _imagePath = path;
+    });
+  }
+
+  // Function to pick an image
+  Future<void> _pickImage() async {
+    try {
+      final XFile? selectedImage =
+          await _picker.pickImage(source: ImageSource.gallery);
+      if (selectedImage == null) return; // No image selected
+
+      // Save the selected image path
+      await hs.setProfileImagePath(selectedImage.path);
+
+      // Refresh the profile image
+      setState(() {
+        _imagePath = selectedImage.path;
+      });
+
+      // Provide user feedback
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Image uploaded successfully!")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error selecting image: $e")),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final imageUrl = _imagePath ?? 'assets/others/defaultProfileImage.png';
+
+    return GestureDetector(
+      onTap: () {
+        if (widget.isEditable) _pickImage(); // Open image picker if editable
+      },
+      child: Stack(
+        children: [
+          CircleAvatar(
+            radius: widget.radius - 3,
+            backgroundImage: imageUrl.startsWith('assets/')
+                ? AssetImage(imageUrl) as ImageProvider
+                : FileImage(File(imageUrl)),
+            backgroundColor: Colors.transparent,
+          ),
+          if (widget.isEditable)
+            Positioned(
+              bottom: 10,
+              right: 10,
+              child: Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.blue,
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                    size: 20,
+                  ),
                 ),
               ),
             ),
-            if (isEditable)
-              Positioned(
-                bottom: 10,
-                right: 10, // Changed from left to right
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.blue, // Replace with desired color
-                  ),
-                  child: Center(
-                    child: Icon(
-                      Icons.edit,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        );
-      },
+        ],
+      ),
     );
   }
+}
 
-  // Builds a reusable FutureBuilder for user data text
-  Widget buildUserDataText({
-    required String futureKey,
-    String prefix = "",
-    String defaultText = "",
-    bool isBold = false,
-    double fontSize = 16,
-  }) {
-    // Declare a Future<String> variable
+class ProfileData {
+  Widget buildUserEmail() {
     Future<String> value;
-
-    // Assign the correct Future<String> based on futureKey
-    switch (futureKey) {
-      case 'userFirstName':
-        value = hs.getUserFirstName();
-        break;
-      case 'userLastName':
-        value = hs.getUserLastName();
-        break;
-      case 'userEmail':
-        value = hs.getUserEmail();
-        break;
-      default:
-        // Use Future.value to return a resolved future
-        value = Future.value("Error fetching data");
-        break;
-    }
-
+    value = hs.getUserEmail();
     return FutureBuilder<String>(
       future: value,
       builder: (context, snapshot) {
@@ -93,16 +122,16 @@ class ProfileData {
           );
         } else if (snapshot.hasData) {
           return Text(
-            "$prefix${snapshot.data}",
+            "${snapshot.data}",
             style: TextStyle(
-              fontSize: fontSize,
-              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+              fontSize: 16,
+              fontWeight: FontWeight.normal,
               color: currentTextColor,
             ),
           );
         } else {
           return Text(
-            defaultText,
+            "Loading...",
             style: TextStyle(color: currentTextColor),
           );
         }
@@ -116,8 +145,11 @@ class UserNameWidget extends StatelessWidget {
   final Color color;
   final TextOverflow isOverflow;
 
-  const UserNameWidget({super.key, this.textType = 1.1, this.color = Colors
-      .black, this.isOverflow = TextOverflow.visible});
+  const UserNameWidget(
+      {super.key,
+      this.textType = 1.1,
+      this.color = Colors.black,
+      this.isOverflow = TextOverflow.visible});
 
   // Returns the full name of the user
   Future<String> getUserFullName() async {
