@@ -120,40 +120,47 @@ class _CustomTextFieldV2State extends State<CustomTextFieldV2> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
-      obscuringCharacter: '*',
-      controller: widget.controller,
-      obscureText: widget.isPassword ? _obscureText : false,
-      style: TextStyle(
-        color: primaryColor,
-        fontSize: fontSizeTitle,
-        fontWeight: fontWeightSimiBold,
-      ),
-      decoration: InputDecoration(
-        hintText: widget.hint,
-        hintStyle: TextStyle(
-          color: Colors.grey,
-          fontSize: fontSizeTitle,
-          fontWeight: fontWeightSimiBold,
+    return SizedBox(
+      height: 50, // Adjust height for smaller size
+      child: TextField(
+        obscuringCharacter: '*',
+        controller: widget.controller,
+        obscureText: widget.isPassword ? _obscureText : false,
+        style: TextStyle(
+          color: primaryColor,
+          fontSize: 20, // Reduced font size for smaller text
+          fontWeight: FontWeight.w500, // Adjust font weight as needed
         ),
-        filled: true,
-        suffixIcon: widget.isPassword
-            ? IconButton(
-                icon: Icon(
-                  _obscureText ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.grey,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
-              )
-            : null,
-        fillColor: widget.backgroundColor,
-        border: OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(13),
+        decoration: InputDecoration(
+          contentPadding: const EdgeInsets.symmetric(
+            vertical: 15, // Reduce vertical padding
+            horizontal: 15, // Reduce horizontal padding
+          ),
+          hintText: widget.hint,
+          hintStyle: TextStyle(
+            color: Colors.grey,
+            fontSize: 20, // Match hint font size to input text
+            fontWeight: FontWeight.w400,
+          ),
+          filled: true,
+          suffixIcon: widget.isPassword
+              ? IconButton(
+                  icon: Icon(
+                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                )
+              : null,
+          fillColor: widget.backgroundColor,
+          border: OutlineInputBorder(
+            borderSide: BorderSide.none,
+            borderRadius: BorderRadius.circular(20), // Smaller border radius
+          ),
         ),
       ),
     );

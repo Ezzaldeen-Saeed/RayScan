@@ -7,7 +7,7 @@ const Color textColorLightMode = Colors.black;
 const Color textColorDarkMode = Colors.white;
 const Color darkModeBG1 = Color(0xFF1e1f22);
 const Color darkModeBG2 = Color(0xff303137);
-const Color lightModeBG1 = Color(0xffffffff);
+const Color lightModeBG1 = Color(0xFFFFFFFF);
 const Color lightModeBG2 = Color(0xff787575);
 const Color successSnackBarBG = Colors.green;
 const Color errorSnackBarBG = Colors.red;
@@ -35,7 +35,7 @@ const FontWeight fontWeightSimiBold = FontWeight.w600;
 
 String fontFamily = 'League Spartassn';
 
-CustomText(String text, double Type, {Color? color}) {
+CustomText(String text, double Type, {Color? color, TextOverflow? isOverflow}) {
   // Type 1 = Title,
   // Type 2 = SubTitle,
   // Type 3 = Text
@@ -52,6 +52,7 @@ CustomText(String text, double Type, {Color? color}) {
             fontWeight: fontWeightSimiBold,
             fontFamily: fontFamily,
             color: color ?? primaryColor,
+            overflow: isOverflow ?? TextOverflow.ellipsis,
           ),
         ),
       );

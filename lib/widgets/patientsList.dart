@@ -9,7 +9,7 @@ class PatientList extends StatelessWidget {
   PatientList({super.key, required this.patients});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext maincontext) {
     return ListView.builder(
       itemCount: patients.length,
       itemBuilder: (context, index) {
@@ -38,16 +38,52 @@ class PatientList extends StatelessWidget {
           phoneNumber: patient['phoneNumber'] ?? 'N/A',
           disease: diagnosisSummary,
           onDismissed: () {
-            // Perform deletion
-            _auth.deletePatient(patient['id']);
+            // Show confirmation dialog before deletion
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Confirm Deletion'),
+                  content: Text(
+                      'Are you sure you want to delete patient ${patient['firstName']} ${patient['lastName']}?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
 
-            // Show feedback
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                    "Patient ${patient['firstName']} ${patient['lastName']} deleted."),
-                duration: Duration(seconds: 1),
-              ),
+                        // Show a snackbar to indicate deletion with undo option
+                        final snackBar = SnackBar(
+                          content: Text(
+                              'Patient ${patient['firstName']} ${patient['lastName']} deleted'),
+                          action: SnackBarAction(
+                            label: 'Undo',
+                            onPressed: () {},
+                          ),
+                        );
+
+                        // Show the SnackBar and wait for it to close
+                        ScaffoldMessenger.of(maincontext)
+                            .showSnackBar(snackBar)
+                            .closed
+                            .then((SnackBarClosedReason reason) {
+                          if (reason != SnackBarClosedReason.action) {
+                            // Call the deletion function if not undone
+                            _auth.deletePatient(patient['id']);
+                          }
+                        });
+                      },
+                      child:
+                          Text('Delete', style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
+                );
+              },
             );
           },
         );

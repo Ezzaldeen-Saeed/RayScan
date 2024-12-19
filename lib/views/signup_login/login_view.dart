@@ -106,7 +106,7 @@ class _LoginViewState extends State<LoginView> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text("Already have an account? "),
+                const Text("Create an account? "),
                 InkWell(
                   onTap: () => context.go('/signup'),
                   child: const Text(

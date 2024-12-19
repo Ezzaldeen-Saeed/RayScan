@@ -59,19 +59,13 @@ class _patientProfile_subviewState extends State<patientProfile_subview> {
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios),
+            icon: const Icon(Icons.arrow_back_ios, color: primaryColor),
             onPressed: () {
               Navigator.of(context).pop();
             },
           ),
           centerTitle: true,
-          title: Text(
-            "Patient Profile",
-            style: TextStyle(
-                color: currentTextColor,
-                fontSize: 24,
-                fontWeight: FontWeight.bold),
-          ),
+          title: CustomText("Patient Profile", 1),
           backgroundColor: currentBG,
           iconTheme: IconThemeData(color: currentTextColor),
         ),

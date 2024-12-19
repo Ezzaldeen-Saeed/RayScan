@@ -81,10 +81,11 @@ class PatientProfileCard extends StatelessWidget {
         );
       },
       child: Card(
+        color: unselectedButton,
         margin: const EdgeInsets.symmetric(vertical: 8.0),
         elevation: 4,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(30),
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),

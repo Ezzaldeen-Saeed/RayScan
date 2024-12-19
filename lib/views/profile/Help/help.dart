@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:testnav/main.dart';
 import 'package:testnav/views/profile/Help/data.dart';
 import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/toggleButton.dart';
@@ -18,6 +19,7 @@ class _HelpSubviewState extends State<Help_subview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: currentBG,
       body: ListView(
         children: [
           // Rounded rectangle background with AppBar and search area
@@ -177,7 +179,7 @@ class _HelpSubviewState extends State<Help_subview> {
         children: [
           _listTile(Icons.headset_mic, "Customer Service",
               "mailto:rayscanmobileapp@gmail.com"),
-          // _listTile(Icons.public, "Website", "www.example.com"),
+          _listTile(Icons.public, "Website", "https://www.example.com"),
           _listTile(Icons.phone, "Whatsapp", "https://wa.me/919999999999"),
           _listTile(Icons.facebook, "Facebook",
               "https://www.facebook.com/profile.php?id=61569808950229"),
@@ -188,12 +190,9 @@ class _HelpSubviewState extends State<Help_subview> {
     );
   }
 
-  // Helper method for list tiles
-  Widget _listTile(IconData icon, String title, String data) {
+  Widget _listTile(IconData icon, String title, String url) {
     return Theme(
-      data: Theme.of(context).copyWith(
-        dividerColor: Colors.transparent,
-      ),
+      data: ThemeData().copyWith(dividerColor: Colors.transparent),
       child: ListTile(
         leading: CircleAvatar(
           backgroundColor: const Color(0xFFBEE3F3),
@@ -203,25 +202,35 @@ class _HelpSubviewState extends State<Help_subview> {
           title,
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
-        trailing: const Icon(Icons.keyboard_arrow_down_rounded,
+        trailing: const Icon(Icons.keyboard_arrow_right_rounded,
             color: Colors.black54),
-        onTap: () async {
-          final Uri url = Uri.parse(data);
-          print('Attempting to launch: $url'); // Debug URL
-
-          if (await canLaunchUrl(url)) {
-            await launchUrl(
-              url,
-              mode: LaunchMode.externalApplication,
-            );
-          } else {
-            print('Could not launch $url');
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Could not launch $data')),
-            );
-          }
-        },
+        onTap: () => _launchUrl(url),
       ),
     );
+  }
+
+  Future<void> _launchUrl(String url) async {
+    try {
+      final Uri uri = Uri.parse(url);
+
+      // Debugging: Print the URI being launched
+      debugPrint('Attempting to launch: $uri');
+
+      // Check if the URL can be launched
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication, // Ensures external app is used
+        );
+      } else {
+        throw 'Cannot launch $url. Ensure the app to handle this action is installed.';
+      }
+    } catch (e) {
+      debugPrint('Error launching URL: $e');
+      // Show user-friendly error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: Could not open the link.')),
+      );
+    }
   }
 }

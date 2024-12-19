@@ -21,9 +21,16 @@ class MiniProfileCard extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomText("Hi, Welcome Back", 3),
+              CustomText(
+                "Hi, Welcome Back",
+                3,
+                isOverflow: TextOverflow.ellipsis,
+              ),
               const SizedBox(height: 5),
-              UserNameWidget(textType: 1),
+              UserNameWidget(
+                textType: 1,
+                isOverflow: TextOverflow.ellipsis,
+              ),
             ],
           ),
           const Spacer(),

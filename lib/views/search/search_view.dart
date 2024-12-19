@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:testnav/auth/auth_service.dart';
+import 'package:testnav/main.dart';
 import 'package:testnav/utils/utility.dart';
 import 'package:testnav/widgets/advancedSearchDialog.dart';
+import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/patientsList.dart';
 
 class SearchView extends StatefulWidget {
@@ -12,8 +14,7 @@ class SearchView extends StatefulWidget {
 }
 
 class _SearchViewState extends State<SearchView> {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController idController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   String? selectedGender;
   String? selectedDisease;
@@ -47,14 +48,20 @@ class _SearchViewState extends State<SearchView> {
     } finally {
       setState(() {
         isLoading = false; // Stop loading
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Fetched ${records.length} patients'),
+          ),
+        );
       });
     }
   }
 
   void filterPatients() {
+    final query = searchController.text.toLowerCase();
+
     setState(() {
-      // Filter logic remains unchanged
-      final filtered = records.where((record) {
+      filteredPatients = records.where((record) {
         final patient = record['patient'];
 
         final String patientFirstName =
@@ -62,17 +69,17 @@ class _SearchViewState extends State<SearchView> {
         final String patientLastName =
             (patient['lastName'] ?? '').toLowerCase();
         final String patientFullName = '$patientFirstName $patientLastName';
-        final String searchName = nameController.text.toLowerCase();
 
         final String patientId = (patient['id'] ?? '').toString().toLowerCase();
-        final String searchId = idController.text.toLowerCase();
+
+        // Check if the query matches either Name or ID
+        bool matchesNameOrId = query.isEmpty ||
+            patientFullName.contains(query) ||
+            patientId.contains(query);
 
         final String patientGender = (patient['gender'] ?? '').toString();
         final int patientAge = patient['age'] ?? 0;
 
-        bool matchesName =
-            searchName.isEmpty || patientFullName.contains(searchName);
-        bool matchesId = searchId.isEmpty || patientId.contains(searchId);
         bool matchesGender =
             selectedGender == null || patientGender == selectedGender;
         bool matchesDisease = selectedDisease == null ||
@@ -80,14 +87,8 @@ class _SearchViewState extends State<SearchView> {
         bool matchesAge =
             patientAge >= ageRange.start && patientAge <= ageRange.end;
 
-        return matchesName &&
-            matchesId &&
-            matchesGender &&
-            matchesDisease &&
-            matchesAge;
+        return matchesNameOrId && matchesGender && matchesDisease && matchesAge;
       }).toList();
-
-      filteredPatients = filtered;
     });
   }
 
@@ -131,19 +132,34 @@ class _SearchViewState extends State<SearchView> {
     );
   }
 
+  void addRandomPatient() {
+    final randomPatientGenerator = RandomPatientGenerator();
+    final randomPatient = randomPatientGenerator.generateRandomPatient();
+
+    auth.createNewPatient(
+      randomPatient['firstName'],
+      randomPatient['lastName'],
+      randomPatient['dateOfBirth'],
+      randomPatient['gender'],
+      randomPatient['phone'],
+      randomPatient['age'],
+    );
+    fetchPatients();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: currentBG,
       appBar: AppBar(
-        title: const Text('Search Patients'),
+        backgroundColor: currentBG,
+        surfaceTintColor: currentBG,
+        centerTitle: true,
+        title: CustomText('Search Patients', 1),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: fetchPatients,
-          ),
-          IconButton(
-            icon: const Icon(Icons.filter_list),
-            onPressed: showAdvancedSearchDialog,
+            icon: const Icon(Icons.add_circle_outline),
+            onPressed: addRandomPatient,
           ),
         ],
       ),
@@ -151,49 +167,50 @@ class _SearchViewState extends State<SearchView> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(labelText: 'Search by Name'),
-              onChanged: (value) => filterPatients(),
-            ),
-            const SizedBox(height: 10),
-            TextField(
-              controller: idController,
-              decoration: const InputDecoration(labelText: 'Search by ID'),
-              onChanged: (value) => filterPatients(),
+            Container(
+              height: 50,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: unselectedButton,
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.filter_alt_rounded),
+                    onPressed: showAdvancedSearchDialog,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                        hintText: 'Search by Name or ID',
+                        hintStyle: TextStyle(color: Colors.grey, fontSize: 20),
+                        suffixIcon: Icon(Icons.search),
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (value) => filterPatients(),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: isLoading
-                  ? const Center(
-                      child: CircularProgressIndicator()) // Show loader
-                  : filteredPatients.isEmpty
-                      ? const Center(child: Text('No patients found.'))
-                      : PatientList(patients: filteredPatients),
-            ),
-            // this button is for adding random patients
-            ElevatedButton(
-              onPressed: () {
-                final randomPatientGenerator = RandomPatientGenerator();
-                final randomPatient =
-                    randomPatientGenerator.generateRandomPatient();
-
-                auth.createNewPatient(
-                  randomPatient['firstName'],
-                  randomPatient['lastName'],
-                  randomPatient['dateOfBirth'],
-                  randomPatient['gender'],
-                  randomPatient['phone'],
-                  randomPatient['age'],
-                );
-                fetchPatients();
-              },
-              child: const Text('Add Random Patient'),
-            ),
+              child: RefreshIndicator(
+                onRefresh: () => fetchPatients(),
+                child: isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator()) // Show loader
+                    : filteredPatients.isEmpty
+                        ? const Center(child: Text('No patients found.'))
+                        : PatientList(patients: filteredPatients),
+              ),
+            )
           ],
         ),
       ),
     );
   }
 }
-

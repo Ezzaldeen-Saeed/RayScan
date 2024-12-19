@@ -114,9 +114,10 @@ class ProfileData {
 class UserNameWidget extends StatelessWidget {
   final double textType;
   final Color color;
+  final TextOverflow isOverflow;
 
-  const UserNameWidget(
-      {super.key, this.textType = 1.1, this.color = Colors.black});
+  const UserNameWidget({super.key, this.textType = 1.1, this.color = Colors
+      .black, this.isOverflow = TextOverflow.visible});
 
   // Returns the full name of the user
   Future<String> getUserFullName() async {
@@ -131,13 +132,17 @@ class UserNameWidget extends StatelessWidget {
       future: getUserFullName(),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return CustomText("Loading...", textType, color: color);
+          return CustomText("Loading...", textType,
+              color: color, isOverflow: isOverflow);
         } else if (snapshot.hasError) {
-          return CustomText("Error: ${snapshot.error}", textType, color: color);
+          return CustomText("Error: ${snapshot.error}", textType,
+              color: color, isOverflow: isOverflow);
         } else if (snapshot.hasData) {
-          return CustomText(snapshot.data!, textType, color: color);
+          return CustomText(snapshot.data!, textType,
+              color: color, isOverflow: isOverflow);
         } else {
-          return CustomText("No data available", textType, color: color);
+          return CustomText("No data available", textType,
+              color: color, isOverflow: isOverflow);
         }
       },
     );

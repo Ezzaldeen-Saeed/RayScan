@@ -7,9 +7,10 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:testnav/auth/auth_service.dart';
-import 'package:testnav/widgets/selectbox.dart';
-import 'package:testnav/widgets/selectdate.dart';
+import 'package:testnav/main.dart';
+import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/textfield.dart';
+import 'package:testnav/widgets/toggleButton.dart';
 
 class AddPatientView extends StatefulWidget {
   const AddPatientView({super.key});
@@ -42,6 +43,8 @@ class _AddPatientViewState extends State<AddPatientView> {
       });
     }
   }
+
+  List<bool> _isSelected = [true, false];
 
   Future<void> _uploadData() async {
     DateTime BD = DateTime.parse(_birthDateController.text);
@@ -156,63 +159,136 @@ class _AddPatientViewState extends State<AddPatientView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Add Patient")),
+      backgroundColor: currentBG,
+      appBar: AppBar(
+        backgroundColor: currentBG,
+        surfaceTintColor: primaryColor,
+        centerTitle: true,
+        title: CustomText("Add Patient", 1),
+      ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(25.0),
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CustomTextField(
-                  hint: "John",
-                  label: "First Name",
-                  controller: _firstNameController),
-              const SizedBox(height: 10),
-              CustomTextField(
-                  hint: "Doe",
-                  label: "Last Name",
-                  controller: _lastNameController),
-              const SizedBox(height: 10),
-              CustomDateSelection(
-                label: "Birth Date",
-                onDateSelected: (date) {
-                  setState(() {
-                    _birthDateController.text = date.toString();
-                  });
-                },
+              Align(
+                alignment: Alignment.centerLeft,
+                child: CustomText("First Name", 2),
               ),
-              const SizedBox(height: 10),
-              CustomSelectBox(
-                items: const ["Male", "Female"],
-                label: 'Gender',
-                onChanged: (value) {
-                  setState(() {
-                    _selectedGender = value;
-                  });
-                },
+              CustomTextFieldV2(
+                type: 1.0,
+                isPassword: false,
+                controller: _firstNameController,
+                hint: "Joe",
               ),
-              const SizedBox(height: 10),
-              CustomTextField(
-                  hint: "1234567890",
-                  label: "Phone Number",
-                  controller: _phoneNumberController,
-                  keyboardType: TextInputType.phone),
               const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: CustomText("Last Name", 2),
+              ),
+              CustomTextFieldV2(
+                type: 1.0,
+                isPassword: false,
+                controller: _lastNameController,
+                hint: "Doe",
+              ),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: CustomText("Phone Number", 2),
+              ),
+              CustomTextFieldV2(
+                type: 1.0,
+                isPassword: false,
+                controller: _phoneNumberController,
+                hint: "1234567890",
+              ),
+              const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: CustomText("Gender", 2),
+              ),
               Center(
-                child: ElevatedButton.icon(
-                  onPressed: _pickImage,
-                  icon: const Icon(Icons.upload_file),
-                  label: const Text("Pick Image"),
+                child: CustomToggleButtons(
+                  labels: ['Male', 'Female'],
+                  isSelected: _isSelected,
+                  onToggle: (int index) {
+                    setState(() {
+                      for (int i = 0; i < _isSelected.length; i++) {
+                        _isSelected[i] = i == index;
+                      }
+                    });
+                  },
+                  padding: 16.0,
                 ),
               ),
               const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: CustomText("Date of Birth", 2),
+              ),
+              CustomTextFieldV2(
+                  type: 1.0,
+                  isPassword: false,
+                  controller: _birthDateController,
+                  hint: "DD/MM/YYYY"),
+              const SizedBox(height: 20),
+              if (_selectedImage == null)
+                Center(
+                  child: GestureDetector(
+                    onTap: _pickImage,
+                    child: Container(
+                      width: double.infinity,
+                      height: 200,
+                      decoration: BoxDecoration(
+                        color: textFieldBGColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Center(
+                        child: const Icon(Icons.file_upload_outlined,
+                            color: primaryColor, size: 70),
+                      ),
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 20),
               if (_selectedImage != null) ...[
                 Center(
-                  child: Image.file(
-                    _selectedImage!,
-                    height: 200,
-                    fit: BoxFit.cover,
+                  child: Stack(
+                    children: [
+                      // Display the image without BoxFit.cover
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(
+                          _selectedImage!,
+                          height: 200,
+                          width: double.infinity,
+                          // fit: BoxFit.cover, // Removed fit property
+                        ),
+                      ),
+                      // Close button positioned on top-right of the image
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.8),
+                            // Semi-transparent background
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: const Icon(Icons.close, color: Colors.red),
+                            onPressed: () {
+                              setState(() {
+                                _selectedImage = null;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 10),
@@ -225,13 +301,22 @@ class _AddPatientViewState extends State<AddPatientView> {
               ],
               const SizedBox(height: 20),
               Center(
-                child: ElevatedButton(
-                  onPressed: _isUploading ? null : _uploadData,
-                  // Disable button when uploading
-                  child: _isUploading
-                      ? const CircularProgressIndicator(
-                          color: Colors.white) // Spinner in button
-                      : const Text("Upload Data"),
+                child: GestureDetector(
+                  onTap: _isUploading ? null : _uploadData,
+                  child: Container(
+                    width: 170,
+                    height: 60,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    decoration: BoxDecoration(
+                      color: _isUploading ? Colors.grey : primaryColor,
+                      borderRadius: BorderRadius.circular(50),
+                    ),
+                    child: Center(
+                      child: _isUploading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : CustomText("Upload", 1, color: Colors.white),
+                    ),
+                  ),
                 ),
               ),
             ],
