@@ -22,7 +22,7 @@ class _SearchViewState extends State<SearchView> {
 
   List<Map<String, dynamic>> records = [];
   List<Map<String, dynamic>> filteredPatients = [];
-  bool isLoading = false; // New state variable for loading
+  bool isLoading = false;
 
   final AuthService auth = AuthService();
 

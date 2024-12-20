@@ -37,7 +37,7 @@ class SignUpAndLogin {
         firstName, lastName, email, password);
     if (user != null) {
       print("User Created Succesfully");
-      login(context, email, password);
+      context.go('/login');
       return true;
     }
     return false;

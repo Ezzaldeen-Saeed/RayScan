@@ -27,21 +27,58 @@ class _AddPatientViewState extends State<AddPatientView> {
   final TextEditingController _phoneNumberController = TextEditingController();
 
   String? _selectedGender;
-  File? _selectedImage;
   String _responseMessage = "";
   bool _isUploading = false;
 
   final ImagePicker _imagePicker = ImagePicker();
   final AuthService _auth = AuthService();
+  File? _selectedImage;
 
-  Future<void> _pickImage() async {
-    final pickedFile =
-        await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
-    }
+  Future<void> _showImageSourceActionSheet() async {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take a Photo'),
+                onTap: () async {
+                  Navigator.of(context).pop(); // Close the bottom sheet
+                  final XFile? pickedImage =
+                      await _imagePicker.pickImage(source: ImageSource.camera);
+                  if (pickedImage != null) {
+                    setState(() {
+                      _selectedImage =
+                          File(pickedImage.path); // Convert to File
+                    });
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Choose from Gallery'),
+                onTap: () async {
+                  Navigator.of(context).pop(); // Close the bottom sheet
+                  final XFile? pickedImage =
+                      await _imagePicker.pickImage(source: ImageSource.gallery);
+                  if (pickedImage != null) {
+                    setState(() {
+                      _selectedImage =
+                          File(pickedImage.path); // Convert to File
+                    });
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   List<bool> _isSelected = [true, false];
@@ -173,6 +210,7 @@ class _AddPatientViewState extends State<AddPatientView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // First Name
               Align(
                 alignment: Alignment.centerLeft,
                 child: CustomText("First Name", 2),
@@ -184,6 +222,7 @@ class _AddPatientViewState extends State<AddPatientView> {
                 hint: "Joe",
               ),
               const SizedBox(height: 20),
+              // Last Name
               Align(
                 alignment: Alignment.centerLeft,
                 child: CustomText("Last Name", 2),
@@ -195,6 +234,7 @@ class _AddPatientViewState extends State<AddPatientView> {
                 hint: "Doe",
               ),
               const SizedBox(height: 20),
+              // Phone Number
               Align(
                 alignment: Alignment.centerLeft,
                 child: CustomText("Phone Number", 2),
@@ -206,6 +246,7 @@ class _AddPatientViewState extends State<AddPatientView> {
                 hint: "1234567890",
               ),
               const SizedBox(height: 20),
+              // Gender
               Align(
                 alignment: Alignment.centerLeft,
                 child: CustomText("Gender", 2),
@@ -225,6 +266,7 @@ class _AddPatientViewState extends State<AddPatientView> {
                 ),
               ),
               const SizedBox(height: 20),
+              // Date of Birth
               Align(
                 alignment: Alignment.centerLeft,
                 child: CustomText("Date of Birth", 2),
@@ -235,10 +277,11 @@ class _AddPatientViewState extends State<AddPatientView> {
                   controller: _birthDateController,
                   hint: "DD/MM/YYYY"),
               const SizedBox(height: 20),
+              // Image Upload
               if (_selectedImage == null)
                 Center(
                   child: GestureDetector(
-                    onTap: _pickImage,
+                    onTap: _showImageSourceActionSheet,
                     child: Container(
                       width: double.infinity,
                       height: 200,

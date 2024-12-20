@@ -46,6 +46,28 @@ class HiveService {
     await box.put('isLoggedIn', status);
   }
 
+  // check if the user is getting started
+  Future<void> finishedGetStarted() async {
+    final box = await Hive.openBox('authBox');
+    await box.put('finishedTutorial', true);
+  }
+
+  // check if the user is getting started
+  Future<bool> isFinishedTutorial() async {
+    final box = await Hive.openBox('authBox');
+    return box.get('finishedTutorial', defaultValue: false) == true;
+  }
+
+  Future<bool> isFirstTime() async {
+    final box = await Hive.openBox('authBox');
+    return box.get('firstTime', defaultValue: true) == true;
+  }
+
+  Future<void> setFirstTime() async {
+    final box = await Hive.openBox('authBox');
+    await box.put('firstTime', false);
+  }
+
   // Save user data
   Future<void> saveUserData(String firstName, String lastName, String userEmail,
       String profileImagePath) async {

@@ -180,12 +180,14 @@ class AuthService {
   }
 
   Future<List<Map<String, dynamic>>> getCurrentUserPatientsFullDetails() async {
+    // Fetch patients associated with the current user
     final patients = await getPatientsByCurrentUserUID();
-    List<Map<String, dynamic>> fullDetails = [];
-    for (var patient in patients) {
+
+    // Fetch all diagnoses in parallel using Future.wait
+    final fullDetails = await Future.wait(patients.map((patient) async {
       final diagnosis = await getPatientDiagnosisByPatientPID(patient['id']);
-      fullDetails.add({'patient': patient, 'diagnosis': diagnosis});
-    }
+      return {'patient': patient, 'diagnosis': diagnosis};
+    }));
     log("Full Details: $fullDetails");
     return fullDetails;
   }

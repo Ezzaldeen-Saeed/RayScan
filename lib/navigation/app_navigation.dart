@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:testnav/main.dart';
+import 'package:testnav/views/GetStarted/getStarted_view.dart';
 import 'package:testnav/views/addPatient/addPatient_view.dart';
 import 'package:testnav/views/addPatient/diagnosisDisplayer.dart';
 import 'package:testnav/views/home/home_view.dart';
@@ -39,9 +41,18 @@ class AppNavigation {
   static late String initial;
 
   static Future<void> setInitial() async {
-    // bool isLoggedIn = await hs.isLoggedIn();
-    // initial = isLoggedIn ? "/home" : "/login";
-    initial = "/home";
+    bool isFinishedTutorial = await hs.isFinishedTutorial();
+    bool isFirstTime = await hs.isFirstTime();
+    bool isLoggedIn = await hs.isLoggedIn();
+    initial = isFirstTime
+        ? "/getStarted"
+        : !isLoggedIn
+            ? "/login"
+            : !isFinishedTutorial
+                ? "//TODO"
+                : "/home";
+    //TODO: Add the get started page
+    // initial = "/home";
     log("Since User Is Logged In Initial Route: $initial");
   }
 
@@ -76,6 +87,14 @@ class AppNavigation {
         name: 'Signup',
         builder: (BuildContext context, GoRouterState state) =>
             const SignupView(),
+      ),
+
+      // Get Started Route
+      GoRoute(
+        path: '/getStarted',
+        name: 'Get Started',
+        builder: (BuildContext context, GoRouterState state) =>
+            getStarted_view(),
       ),
 
       /// MainWrapper
