@@ -65,20 +65,22 @@ class _FeedbackViewState extends State<feedback_veiw>
           ),
         ),
         Container(
-          color: Colors.black.withOpacity(0.7),
+          color: Colors.black.withOpacity(0.5),
         ),
         Center(
           child: SafeArea(
-            child: Column(
+            child: ListView(
               children: [
+                const SizedBox(height: 20),
                 FadeTransition(
                   opacity: _fadeAnimation,
                   child: const Text(
+                    textAlign: TextAlign.center,
                     "Feedback",
                     style: TextStyle(fontSize: 30, color: Colors.white),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 100),
                 Padding(
                   padding: const EdgeInsets.all(40.0),
                   child: Form(
@@ -187,7 +189,7 @@ class _FeedbackViewState extends State<feedback_veiw>
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 100),
                         CustomButton(
                           onPressed: () {
                             _submit(context);

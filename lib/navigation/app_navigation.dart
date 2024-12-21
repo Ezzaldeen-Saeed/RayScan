@@ -33,7 +33,7 @@ import 'package:testnav/views/wrapper/main_wrapper.dart';
 //  - /profile/Help_subview
 //  - /profile/About_subview
 //  - /addPatient
-//  - /addPatient/imageUpload_subview
+//  - /addPatient/diagnosisDisplayer_subview
 
 class AppNavigation {
   AppNavigation._();
@@ -52,7 +52,7 @@ class AppNavigation {
                 ? "/home"
                 : "/home";
     //TODO: Add the get started page
-    // initial = "/home";
+    // initial = "/search";
     log("Since User Is Logged In Initial Route: $initial");
   }
 

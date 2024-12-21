@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/utils/Utility.dart';
+import 'package:testnav/widgets/customDialog.dart';
 import 'package:testnav/widgets/pallet.dart';
 
 class CustomButton extends StatelessWidget {
@@ -120,36 +121,33 @@ class CustomProfileButton extends StatelessWidget {
             showDialog(
               context: maincontext,
               builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text("Confirm Logout"),
-                  content: Text("Are you sure you want to logout?"),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Dismiss the dialog
-                      },
-                      child: Text("Cancel"),
-                    ),
-                    TextButton(
-                      onPressed: () async {
-                        Navigator.of(context).pop(); // Dismiss the dialog
-                        bool signOutSuccess = await _handleSignOut(maincontext);
-                        if (signOutSuccess) {
-                          ScaffoldMessenger.of(maincontext).showSnackBar(
-                            SnackBar(
-                              content: Text("User Logged Out Successfully"),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        } else {
-                          ScaffoldMessenger.of(maincontext).showSnackBar(
-                            SnackBar(content: Text("Error Logging Out")),
-                          );
-                        }
-                      },
-                      child: Text("Logout"),
-                    ),
-                  ],
+                return CustomDialog(
+                  onContinue: () {
+                    () async {
+                      Navigator.of(context).pop(); // Dismiss the dialog
+                      bool signOutSuccess = await _handleSignOut(maincontext);
+                      if (signOutSuccess) {
+                        ScaffoldMessenger.of(maincontext).showSnackBar(
+                          SnackBar(
+                            content: Text("User Logged Out Successfully"),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(maincontext).showSnackBar(
+                          SnackBar(content: Text("Error Logging Out")),
+                        );
+                      }
+                    }();
+                  },
+                  onHintTap: () {},
+                  hasHint: false,
+                  hasBackOption: true,
+                  backgroundColor: confirmAlertDialogBg,
+                  fontColor: confirmAlertDialogFont,
+                  title: 'Confirm Logout!',
+                  continueButtonChild: const Text("Confirm",
+                      style: TextStyle(color: Colors.white)),
                 );
               },
             );
