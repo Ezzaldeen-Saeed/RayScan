@@ -17,7 +17,7 @@ class MiniProfileCard extends StatelessWidget {
       padding: const EdgeInsets.all(16.0),
       child: Row(
         children: [
-          profileData,
+          GestureDetector(onTap: onPressed, child: profileData),
           const SizedBox(width: 10),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,

@@ -249,4 +249,26 @@ class AuthService {
       log('Error deleting patient: $e');
     }
   }
+
+  Future<bool> feedback(String text, String text3, int rating) async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final feedbackRef = _firestore.collection('Feedback').doc();
+        final feedbackData = {
+          'id': feedbackRef.id,
+          'Name': text,
+          'Feedback': text3,
+          'Rating': rating,
+        };
+
+        await feedbackRef.set(feedbackData);
+        log('Feedback submitted: ${feedbackRef.id}');
+        return true;
+      }
+    } catch (e) {
+      log('Error in feedback: $e');
+    }
+    return false;
+  }
 }

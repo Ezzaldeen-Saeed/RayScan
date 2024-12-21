@@ -49,7 +49,7 @@ class AppNavigation {
         : !isLoggedIn
             ? "/login"
             : !isFinishedTutorial
-                ? "//TODO"
+                ? "/home"
                 : "/home";
     //TODO: Add the get started page
     // initial = "/home";

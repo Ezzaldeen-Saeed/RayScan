@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:testnav/main.dart';
+import 'package:testnav/views/Feedback/feedback_veiw.dart';
 import 'package:testnav/views/profile/Help/data.dart';
 import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/toggleButton.dart';
@@ -25,6 +26,11 @@ class _HelpSubviewState extends State<Help_subview> {
   void initState() {
     super.initState();
     _searchController.addListener(() {
+      if (_searchController.text.toLowerCase() == "feedback") {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => feedback_veiw()));
+        _searchController.clear();
+      }
       setState(() {
         _searchQuery = _searchController.text;
         _filterQuestions();

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:testnav/auth/auth_service.dart';
+import 'package:testnav/widgets/customDialog.dart';
+import 'package:testnav/widgets/customSnackbar.dart';
 import 'package:testnav/widgets/miniPatientCard.dart';
+import 'package:testnav/widgets/pallet.dart';
 
 class PatientList extends StatelessWidget {
   final List<Map<String, dynamic>> patients;
@@ -42,46 +45,28 @@ class PatientList extends StatelessWidget {
             showDialog(
               context: context,
               builder: (BuildContext context) {
-                return AlertDialog(
-                  title: Text('Confirm Deletion'),
-                  content: Text(
-                      'Are you sure you want to delete patient ${patient['firstName']} ${patient['lastName']}?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-                      },
-                      child: Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the dialog
-
-                        // Show a snackbar to indicate deletion with undo option
-                        final snackBar = SnackBar(
-                          content: Text(
-                              'Patient ${patient['firstName']} ${patient['lastName']} deleted'),
-                          action: SnackBarAction(
-                            label: 'Undo',
-                            onPressed: () {},
-                          ),
-                        );
-
-                        // Show the SnackBar and wait for it to close
-                        ScaffoldMessenger.of(maincontext)
-                            .showSnackBar(snackBar)
-                            .closed
-                            .then((SnackBarClosedReason reason) {
-                          if (reason != SnackBarClosedReason.action) {
-                            // Call the deletion function if not undone
-                            _auth.deletePatient(patient['id']);
-                          }
-                        });
-                      },
-                      child:
-                          Text('Delete', style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
+                return CustomDialog(
+                  onContinue: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                    CustomSnackbar(
+                            title:
+                                'Patient ${patient['firstName']} ${patient['lastName']} deleted',
+                            actionLabel: "Undo",
+                            backgroundColor: undoSnackbarBG,
+                            fontColor: undoSnackbarFont,
+                            hasAction: true,
+                            onPressAction: () {})
+                        .showUndo(maincontext, patient['id']);
+                  },
+                  onHintTap: () {},
+                  hasHint: true,
+                  hasBackOption: true,
+                  hintIcon: Icons.warning_amber_rounded,
+                  backgroundColor: confirmAlertDialogBg,
+                  fontColor: confirmAlertDialogFont,
+                  title: 'Confirm Deletion!',
+                  continueButtonChild: const Text("Confirm",
+                      style: TextStyle(color: Colors.white)),
                 );
               },
             );

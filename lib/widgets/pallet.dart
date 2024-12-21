@@ -19,6 +19,18 @@ const Color cardDisease3 = Color.fromRGBO(215, 255, 215, 1);
 const Color cardDisease4 = Color.fromRGBO(215, 215, 255, 1);
 const Color cardDisease5 = Color.fromRGBO(255, 255, 215, 1);
 
+const Color errorAlertDialogBg = Color(0xFFF4DADA);
+const Color errorAlertDialogFont = Color(0xFFA72C2C);
+const Color infoAlertDialogBg = Color(0xFFA8D4E7);
+const Color infoAlertDialogFont = Color(0xFF186A8D);
+const Color confirmAlertDialogBg = Color(0xFFFFFFFF);
+const Color confirmAlertDialogFont = Color(0xFF2C82A7);
+const Color confirmAlertDialogCancelBG = Color(0xFFECF1FF);
+const Color confirmAlertDialogCancelFont = Color(0xFF2C82A7);
+
+const Color undoSnackbarBG = Color(0xFFFFFFFF);
+const Color undoSnackbarFont = Color(0xFF2C82A7);
+
 const Color textFieldBGColor = Color(0xFFDCEAFA);
 const Color unselectedButton = Color(0xFFBDD7E5);
 
