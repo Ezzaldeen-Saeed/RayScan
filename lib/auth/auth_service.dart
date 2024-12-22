@@ -29,8 +29,7 @@ class AuthService {
       String userId = cred.user!.uid;
 
       // Save additional user data in Realtime Database
-      await _firestore.collection('Users').doc(userId).set({
-        'fName': fName, 'lName': lName});
+      await _firestore.collection('Users').doc(userId).set({'fName': fName, 'lName': lName, 'email': email});
 
       log("User registered and data saved successfully.");
       return cred.user;

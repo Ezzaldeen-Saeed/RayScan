@@ -50,14 +50,27 @@ class SignUpAndLogin {
     if (user != null) {
       print("User Logged In");
       HiveService().setLoginStatus(true);
-      Map data = await _auth.getCurrentUserData();
-      String fName = data['userFirstName'];
-      String lName = data['userLastName'];
-      String profileImagePath = await HiveService().getProfileImagePath();
-      HiveService().saveUserData(fName, lName, email, profileImagePath);
+
+      Map<String, dynamic>? data = await _auth.getCurrentUserData();
+      if (data == null ||
+          !data.containsKey('userFirstName') ||
+          !data.containsKey('userLastName')) {
+        print("Incomplete user data. Defaulting to placeholders.");
+        HiveService().saveUserData("Guest", "", email, "");
+      } else {
+        String fName = data['userFirstName'] ?? "Guest";
+        String lName = data['userLastName'] ?? "";
+        String profileImagePath =
+            await HiveService().getProfileImagePath() ?? "";
+
+        HiveService().saveUserData(fName, lName, email, profileImagePath);
+      }
+
       context.go('/home');
       return true;
     }
+
+    print("Login failed for email: $email");
     return false;
   }
 

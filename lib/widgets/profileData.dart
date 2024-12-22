@@ -153,9 +153,13 @@ class UserNameWidget extends StatelessWidget {
 
   // Returns the full name of the user
   Future<String> getUserFullName() async {
-    String firstName = await hs.getUserFirstName();
-    String lastName = await hs.getUserLastName();
-    return '$firstName $lastName';
+    String? firstName = await hs.getUserFirstName();
+    String? lastName = await hs.getUserLastName();
+
+    firstName ??= "Guest";
+    lastName ??= "";
+
+    return '$firstName $lastName'.trim();
   }
 
   @override
@@ -167,9 +171,10 @@ class UserNameWidget extends StatelessWidget {
           return CustomText("Loading...", textType,
               color: color, isOverflow: isOverflow);
         } else if (snapshot.hasError) {
+          print(snapshot.error);
           return CustomText("Error: ${snapshot.error}", textType,
               color: color, isOverflow: isOverflow);
-        } else if (snapshot.hasData) {
+        } else if (snapshot.hasData && snapshot.data != null) {
           return CustomText(snapshot.data!, textType,
               color: color, isOverflow: isOverflow);
         } else {

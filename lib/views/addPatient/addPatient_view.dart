@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/widgets/pallet.dart';
+import 'package:testnav/widgets/selectdate.dart';
 import 'package:testnav/widgets/textfield.dart';
 import 'package:testnav/widgets/toggleButton.dart';
 
@@ -126,6 +127,8 @@ class _AddPatientViewState extends State<AddPatientView> {
       // Add form fields
       request.fields['PID'] = await pid;
 
+      request.fields['model_type'] = "chest";
+
       // Add image file
       request.files.add(
         await http.MultipartFile.fromPath('file', _selectedImage!.path),
@@ -154,13 +157,14 @@ class _AddPatientViewState extends State<AddPatientView> {
                   );
                 });
                 log("Server Response: ${response["message"]}");
+                log("Server Response: $response");
 
                 // Check if top_prediction exists (or any other field you're expecting)
                 if (response.containsKey("top_predictions")) {
-                  _responseMessage = response["top_predictions"];
+                  final topPredictions = response["top_predictions"];
                   log("Top Predictions: ${response["top_predictions"]}");
                   context.go("/addPatient/diagnosisDisplayer_subview", extra: {
-                    "data": response["top_predictions"],
+                    "data": topPredictions,
                     "PID": await pid,
                     "FullName":
                         "${_firstNameController.text} ${_lastNameController.text}",
@@ -180,6 +184,7 @@ class _AddPatientViewState extends State<AddPatientView> {
       } else {
         setState(() {
           _responseMessage = "Upload failed: ${streamedResponse.statusCode}";
+          print("Upload failed: ${streamedResponse.statusCode}");
         });
       }
     } catch (e) {
@@ -246,7 +251,15 @@ class _AddPatientViewState extends State<AddPatientView> {
                 hint: "1234567890",
               ),
               const SizedBox(height: 20),
-              // Gender
+              CustomDateSelection(
+                label: "Birth Date",
+                onDateSelected: (date) {
+                  setState(() {
+                    _birthDateController.text = date.toString();
+                  });
+                },
+              ),
+              const SizedBox(height: 10),
               Align(
                 alignment: Alignment.centerLeft,
                 child: CustomText("Gender", 2),
@@ -265,17 +278,6 @@ class _AddPatientViewState extends State<AddPatientView> {
                   padding: 16.0,
                 ),
               ),
-              const SizedBox(height: 20),
-              // Date of Birth
-              Align(
-                alignment: Alignment.centerLeft,
-                child: CustomText("Date of Birth", 2),
-              ),
-              CustomTextFieldV2(
-                  type: 1.0,
-                  isPassword: false,
-                  controller: _birthDateController,
-                  hint: "DD/MM/YYYY"),
               const SizedBox(height: 20),
               // Image Upload
               if (_selectedImage == null)

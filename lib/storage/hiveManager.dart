@@ -72,10 +72,13 @@ class HiveService {
   Future<void> saveUserData(String firstName, String lastName, String userEmail,
       String profileImagePath) async {
     final box = await Hive.openBox('userBox');
-    await box.put('userFirstName', firstName);
-    await box.put('userLastName', lastName);
-    await box.put('userEmail', userEmail);
-    await box.put('profileImagePath', profileImagePath);
+
+    await box.put('userFirstName', firstName.isNotEmpty ? firstName : "Guest");
+    await box.put('userLastName', lastName.isNotEmpty ? lastName : "");
+    await box.put(
+        'userEmail', userEmail.isNotEmpty ? userEmail : "No Email Provided");
+    await box.put('profileImagePath',
+        profileImagePath.isNotEmpty ? profileImagePath : "default_profile.png");
   }
 
   Future<String> getUserFirstName() async {

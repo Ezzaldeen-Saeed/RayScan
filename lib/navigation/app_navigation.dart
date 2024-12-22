@@ -52,7 +52,7 @@ class AppNavigation {
                 ? "/home"
                 : "/home";
     //TODO: Add the get started page
-    // initial = "/search";
+    // initial = "/addPatient";
     log("Since User Is Logged In Initial Route: $initial");
   }
 

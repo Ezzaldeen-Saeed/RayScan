@@ -82,6 +82,7 @@ CustomText(String text, double Type, {Color? color, TextOverflow? isOverflow}) {
             color: color ?? primaryColor,
           ),
         ),
+        overflow: isOverflow ?? TextOverflow.ellipsis,
       );
     case 1.2:
       return Text(
@@ -97,9 +98,11 @@ CustomText(String text, double Type, {Color? color, TextOverflow? isOverflow}) {
             color: color ?? primaryColor,
           ),
         ),
+        overflow: isOverflow ?? TextOverflow.ellipsis,
       );
     case 2:
       return Text(text,
+          overflow: isOverflow ?? TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: fontSizeSubTitle,
             fontWeight: fontWeightMedium,
@@ -108,6 +111,7 @@ CustomText(String text, double Type, {Color? color, TextOverflow? isOverflow}) {
           ));
     case 2.1:
       return Text(text,
+          overflow: isOverflow ?? TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: fontSizeSubTitle,
             fontWeight: fontWeightMedium,
@@ -116,6 +120,7 @@ CustomText(String text, double Type, {Color? color, TextOverflow? isOverflow}) {
           ));
     case 3:
       return Text(text,
+          overflow: isOverflow ?? TextOverflow.ellipsis,
           style: TextStyle(
             fontSize: fontSizeText,
             fontWeight: fontWeightLight,
