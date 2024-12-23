@@ -156,8 +156,9 @@ class UserNameWidget extends StatelessWidget {
     String? firstName = await hs.getUserFirstName();
     String? lastName = await hs.getUserLastName();
 
-    firstName ??= "Guest";
-    lastName ??= "";
+    // Provide default values if names are null
+    firstName = firstName ?? "Guest";
+    lastName = lastName ?? "";
 
     return '$firstName $lastName'.trim();
   }
@@ -171,7 +172,6 @@ class UserNameWidget extends StatelessWidget {
           return CustomText("Loading...", textType,
               color: color, isOverflow: isOverflow);
         } else if (snapshot.hasError) {
-          print(snapshot.error);
           return CustomText("Error: ${snapshot.error}", textType,
               color: color, isOverflow: isOverflow);
         } else if (snapshot.hasData && snapshot.data != null) {

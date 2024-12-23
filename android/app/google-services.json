@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "948118132352",
-    "project_id": "srs-project-be493",
-    "storage_bucket": "srs-project-be493.firebasestorage.app"
+    "project_number": "172772783799",
+    "project_id": "project-srs2",
+    "storage_bucket": "project-srs2.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:948118132352:android:c6c748c20d2f34556ab865",
+        "mobilesdk_app_id": "1:172772783799:android:63777ce3ce89ac667a3f32",
         "android_client_info": {
           "package_name": "com.example.testnav"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAB-5f8crGOGuXYD8jyywDrovInzHhGUhM"
+          "current_key": "AIzaSyCBJU5UCJ3vkkvRtjXaHqi9A279QmfznpA"
         }
       ],
       "services": {

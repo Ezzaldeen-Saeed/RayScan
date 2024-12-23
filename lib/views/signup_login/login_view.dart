@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:testnav/utils/utility.dart';
 import 'package:testnav/views/signup_login/forgetPass_view.dart';
 import 'package:testnav/widgets/customSnackbar.dart';
+import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/textfield.dart';
 
 class LoginView extends StatefulWidget {
@@ -51,38 +52,48 @@ class _LoginViewState extends State<LoginView>
       _isLoggingIn = true;
     });
 
-    final success = await signupLogin.login(
-      context,
-      _email.text.trim(),
-      _password.text.trim(),
-    );
+    try {
+      final success = await signupLogin.login(
+        context,
+        _email.text.trim(),
+        _password.text.trim(),
+      );
 
-    setState(() {
-      _isLoggingIn = false;
-    });
-
-    if (!success) {
-      CustomSnackbar(
-        title: 'Login failed. Please try again.',
-        actionLabel: "Retry",
-        backgroundColor: Colors.red,
-        fontColor: Colors.white,
-        hasAction: true,
-        onPressAction: () {
-          _handleLogin();
-        },
-      ).showUndo(context, 'patientId');
-    } else {
-      CustomSnackbar(
-        title: 'Login Successful',
-        actionLabel: "Go to Home",
-        backgroundColor: Colors.green,
-        fontColor: Colors.white,
-        hasAction: true,
-        onPressAction: () {
-          context.go('/home');
-        },
-      ).show(context);
+      if (!success) {
+        CustomSnackbar(
+          title: 'Login failed. Please try again.',
+          actionLabel: "Retry",
+          backgroundColor: Colors.red,
+          fontColor: Colors.white,
+          hasAction: true,
+          onPressAction: () {
+            _handleLogin();
+          },
+        ).showUndo(context, 'patientId');
+      } else {
+        CustomSnackbar(
+          title: 'Login Successful',
+          actionLabel: "Go to Home",
+          backgroundColor: Colors.green,
+          fontColor: Colors.white,
+          hasAction: true,
+          onPressAction: () {
+            context.go('/home');
+          },
+        ).show(context);
+      }
+    } catch (e) {
+      print("Error during login: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("An unexpected error occurred. Please try again."),
+          backgroundColor: errorSnackBarBG,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoggingIn = false;
+      });
     }
   }
 

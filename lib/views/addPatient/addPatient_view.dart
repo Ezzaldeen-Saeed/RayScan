@@ -1,15 +1,16 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
 import 'package:testnav/auth/auth_service.dart';
 import 'package:testnav/main.dart';
 import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/selectdate.dart';
+import 'package:testnav/widgets/testSelector.dart';
 import 'package:testnav/widgets/textfield.dart';
 import 'package:testnav/widgets/toggleButton.dart';
 
@@ -27,13 +28,26 @@ class _AddPatientViewState extends State<AddPatientView> {
   final TextEditingController _birthDateController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
 
-  String? _selectedGender;
+  String _selectedGender = "Male";
+  String _selectedModelType = "chest";
   String _responseMessage = "";
   bool _isUploading = false;
 
   final ImagePicker _imagePicker = ImagePicker();
   final AuthService _auth = AuthService();
   File? _selectedImage;
+
+  final List<bool> _isSelected = [true, false];
+  final List<bool> _isSelected2 = [true, false];
+
+  @override
+  void dispose() {
+    super.dispose();
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _birthDateController.dispose();
+    _phoneNumberController.dispose();
+  }
 
   Future<void> _showImageSourceActionSheet() async {
     showModalBottomSheet(
@@ -46,6 +60,7 @@ class _AddPatientViewState extends State<AddPatientView> {
           child: Wrap(
             children: [
               ListTile(
+                enabled: false,
                 leading: const Icon(Icons.camera_alt),
                 title: const Text('Take a Photo'),
                 onTap: () async {
@@ -70,7 +85,7 @@ class _AddPatientViewState extends State<AddPatientView> {
                   if (pickedImage != null) {
                     setState(() {
                       _selectedImage =
-                          File(pickedImage.path); // Convert to File
+                          File(pickedImage.path); // Convert to File.
                     });
                   }
                 },
@@ -82,18 +97,22 @@ class _AddPatientViewState extends State<AddPatientView> {
     );
   }
 
-  List<bool> _isSelected = [true, false];
-
   Future<void> _uploadData() async {
+    final Logger log = Logger(
+      // filter: null, // Use the default LogFilter (-> only log in debug mode)
+      printer: PrettyPrinter(), // Use the PrettyPrinter to format and print log
+      output: null, // Use the default LogOutput (-> send everything to console)
+    );
     DateTime BD = DateTime.parse(_birthDateController.text);
     int age = DateTime.now().year - BD.year;
     Future<String> pid = _auth.createNewPatient(
-        _firstNameController.text,
-        _lastNameController.text,
-        BD,
-        _selectedGender!,
-        _phoneNumberController.text,
-        age);
+      _firstNameController.text,
+      _lastNameController.text,
+      BD,
+      _selectedGender,
+      _phoneNumberController.text,
+      age,
+    );
 
     String url = "$flaskServerUrl/upload";
     final uri = Uri.parse(url);
@@ -123,15 +142,23 @@ class _AddPatientViewState extends State<AddPatientView> {
     try {
       var request = http.MultipartRequest('POST', uri);
       request.headers.addAll(headers);
-
-      // Add form fields
       request.fields['PID'] = await pid;
+      request.fields['model_type'] = _selectedModelType;
 
-      request.fields['model_type'] = "chest";
+      String ID = await pid;
+      int newId = await _auth.getNewID(ID);
 
-      // Add image file
+      String filePath = _selectedImage!.path;
+      String fileExtension =
+          filePath.split('.').last; // Get the extension from the file path
+
       request.files.add(
-        await http.MultipartFile.fromPath('file', _selectedImage!.path),
+        await http.MultipartFile.fromPath(
+          'file',
+          filePath,
+          filename:
+              "$newId.$fileExtension", // Append the extension to the new ID
+        ),
       );
 
       // Send the request
@@ -139,14 +166,15 @@ class _AddPatientViewState extends State<AddPatientView> {
 
       if (streamedResponse.statusCode == 200) {
         final stream = streamedResponse.stream.transform(utf8.decoder);
+
         await for (final line in stream) {
           if (line.startsWith("data:")) {
-            final jsonData = line.substring(5).trim();
+            final jsonData = line.substring(5).trim(); // Clean the response
 
             try {
               final response = json.decode(jsonData);
 
-              // Check if 'message' exists in the response
+              // Handle the response message
               if (response.containsKey("message")) {
                 setState(() {
                   _responseMessage = response["message"];
@@ -156,41 +184,44 @@ class _AddPatientViewState extends State<AddPatientView> {
                     ),
                   );
                 });
-                log("Server Response: ${response["message"]}");
-                log("Server Response: $response");
+                log.i("Server Response: ${response["message"]}");
 
                 // Check if top_prediction exists (or any other field you're expecting)
                 if (response.containsKey("top_predictions")) {
-                  final topPredictions = response["top_predictions"];
-                  log("Top Predictions: ${response["top_predictions"]}");
                   context.go("/addPatient/diagnosisDisplayer_subview", extra: {
-                    "data": topPredictions,
+                    "data": response["top_predictions"],
                     "PID": await pid,
+                    "DOB": _birthDateController.text,
                     "FullName":
                         "${_firstNameController.text} ${_lastNameController.text}",
                     "Gender": _selectedGender,
-                    // send the image
+                    "ModelType": _selectedModelType,
                     "image": _selectedImage!.path,
                   });
                 }
               } else {
-                log("No message found in the response");
+                log.e("No 'message' found in the response.");
               }
             } catch (e) {
-              log("Error decoding JSON: $e");
+              log.e("Error decoding JSON: $e");
+              setState(() {
+                _responseMessage =
+                    "Error decoding server response. Please try again.";
+              });
             }
           }
         }
       } else {
         setState(() {
           _responseMessage = "Upload failed: ${streamedResponse.statusCode}";
-          print("Upload failed: ${streamedResponse.statusCode}");
         });
+        log.e("Upload failed: ${streamedResponse.statusCode}");
       }
     } catch (e) {
       setState(() {
         _responseMessage = "An error occurred: $e";
       });
+      log.e("An error occurred: $e");
     } finally {
       setState(() {
         _isUploading = false;
@@ -215,10 +246,12 @@ class _AddPatientViewState extends State<AddPatientView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // for testing purposes
+              DiagnosisSelector(),
               // First Name
               Align(
                 alignment: Alignment.centerLeft,
-                child: CustomText("First Name", 2),
+                child: CustomText("First Name*", 2),
               ),
               CustomTextFieldV2(
                 type: 1.0,
@@ -230,7 +263,7 @@ class _AddPatientViewState extends State<AddPatientView> {
               // Last Name
               Align(
                 alignment: Alignment.centerLeft,
-                child: CustomText("Last Name", 2),
+                child: CustomText("Last Name*", 2),
               ),
               CustomTextFieldV2(
                 type: 1.0,
@@ -242,7 +275,7 @@ class _AddPatientViewState extends State<AddPatientView> {
               // Phone Number
               Align(
                 alignment: Alignment.centerLeft,
-                child: CustomText("Phone Number", 2),
+                child: CustomText("Phone Number*", 2),
               ),
               CustomTextFieldV2(
                 type: 1.0,
@@ -251,6 +284,10 @@ class _AddPatientViewState extends State<AddPatientView> {
                 hint: "1234567890",
               ),
               const SizedBox(height: 20),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: CustomText("Date of Birth*", 2),
+              ),
               CustomDateSelection(
                 label: "Birth Date",
                 onDateSelected: (date) {
@@ -273,6 +310,30 @@ class _AddPatientViewState extends State<AddPatientView> {
                       for (int i = 0; i < _isSelected.length; i++) {
                         _isSelected[i] = i == index;
                       }
+                      // Update _selectedGender based on the selected index
+                      _selectedGender = _isSelected[0] ? 'Male' : 'Female';
+                    });
+                  },
+                  padding: 16.0,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: CustomText("Model Type", 2),
+              ),
+              Center(
+                child: CustomToggleButtons(
+                  labels: ['chest', 'bone fracture'],
+                  isSelected: _isSelected2,
+                  onToggle: (int index) {
+                    setState(() {
+                      for (int i = 0; i < _isSelected2.length; i++) {
+                        _isSelected2[i] = i == index;
+                      }
+                      // Update _selectedGender based on the selected index
+                      _selectedModelType =
+                          _isSelected2[0] ? 'chest' : 'bone fracture';
                     });
                   },
                   padding: 16.0,

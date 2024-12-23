@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,7 +30,10 @@ class AuthService {
       String userId = cred.user!.uid;
 
       // Save additional user data in Realtime Database
-      await _firestore.collection('Users').doc(userId).set({'fName': fName, 'lName': lName, 'email': email});
+      await _firestore
+          .collection('Users')
+          .doc(userId)
+          .set({'fName': fName, 'lName': lName});
 
       log("User registered and data saved successfully.");
       return cred.user;
@@ -218,25 +222,54 @@ class AuthService {
     return "";
   }
 
-  Future<void> addDiagnosis(
-      String patientId, List<Map<String, dynamic>>? diagnosisList) async {
+  Future<int> getNewID(String PID) async {
+    // Fetch the largest ID for the given PID
+    final querySnapshot = await _firestore
+        .collection('Diagnosis')
+        .where('PID', isEqualTo: pid)
+        .get();
+
+    int maxId = 0;
+    for (var doc in querySnapshot.docs) {
+      final docId = doc.data()['id'];
+      if (docId is int && docId > maxId) {
+        maxId = docId;
+      }
+    }
+
+    final newId = maxId + 1;
+    return newId;
+  }
+
+  Future<void> addDiagnosis(List<Map<String, dynamic>>? diagnosisList) async {
     try {
       for (var diagnosis in diagnosisList ?? []) {
+        final pid = diagnosis['PID'];
+
+        int newId = 0;
+        newId = await getNewID(pid);
+
         final diagnosisRef = _firestore.collection('Diagnosis').doc();
+        final date = DateTime.now();
+
+        // Prepare diagnosis data
         final diagnosisData = {
-          'id': diagnosisRef.id,
-          'PID': patientId,
+          'id': newId, // Use the new ID
+          'PID': pid,
           'Diagnosis': diagnosis['Diagnosis'],
-          'Diagnosis_Date': diagnosis['Diagnosis_Date'],
-          'Image_Path': diagnosis['Image_Path'],
+          'Diagnosis_Date': date,
+          'Image_Path': '', // Default to empty string if no image
           'label': diagnosis['label'],
+          'ModelType': diagnosis['ModelType'],
         };
 
+        // Add data to Firestore
         await diagnosisRef.set(diagnosisData);
-        log('Added diagnosis: ${diagnosisRef.id} for patient: $patientId');
+        log('Added diagnosis with ID: $newId for patient: $pid');
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       log('Error adding diagnosis: $e');
+      log('Stack trace: $stackTrace');
     }
   }
 

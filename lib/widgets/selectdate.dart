@@ -8,21 +8,22 @@ class CustomDateSelection extends StatefulWidget {
     required this.label,
     required this.onDateSelected,
     this.selectedDate,
-    this.hint = 'Select a date',
+    this.hint = 'YYYY-MM-DD',
     this.backgroundColor = textFieldBGColor,
     this.focusedBorderColor = primaryColor,
     this.isIconed = false,
     this.icon,
   });
 
-  final String label;
-  final DateTime? selectedDate;
-  final void Function(DateTime) onDateSelected;
-  final String hint;
-  final Color backgroundColor;
-  final Color focusedBorderColor;
-  final bool isIconed;
-  final Icon? icon;
+  final String label; // Label for the date picker
+  final DateTime? selectedDate; // Initially selected date
+  final void Function(DateTime)
+      onDateSelected; // Callback when a date is selected
+  final String hint; // Hint text
+  final Color backgroundColor; // Background color of the field
+  final Color focusedBorderColor; // Border color when focused
+  final bool isIconed; // Determines if an icon is added
+  final Icon? icon; // Icon to display (if `isIconed` is true)
 
   @override
   _CustomDateSelectionState createState() => _CustomDateSelectionState();
@@ -39,18 +40,14 @@ class _CustomDateSelectionState extends State<CustomDateSelection> {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50, // Adjust height for smaller size
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+      ),
       child: Material(
         elevation: 0,
         borderRadius: BorderRadius.circular(20),
-        // Border radius similar to CustomTextFieldV2
         child: TextField(
-          style: TextStyle(
-            color: Color(0xFF2c82a7),
-            fontWeight: FontWeight.w500, // Adjust font weight as needed
-            fontSize: 20, // Reduced font size for smaller text
-          ),
           readOnly: true,
           // Disable text input
           controller: TextEditingController(
@@ -64,7 +61,7 @@ class _CustomDateSelectionState extends State<CustomDateSelection> {
               context: context,
               initialDate: _selectedDate ?? DateTime.now(),
               firstDate: DateTime(1900),
-              lastDate: DateTime(2100),
+              lastDate: DateTime.now(),
             );
             if (pickedDate != null) {
               setState(() {
@@ -73,11 +70,12 @@ class _CustomDateSelectionState extends State<CustomDateSelection> {
               widget.onDateSelected(pickedDate);
             }
           },
+          style: TextStyle(
+            color: primaryColor,
+            fontSize: 20, // Match hint font size to input text
+            fontWeight: FontWeight.w700,
+          ),
           decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(
-              vertical: 15, // Reduced vertical padding
-              horizontal: 15, // Reduced horizontal padding
-            ),
             hintText: widget.hint,
             hintStyle: TextStyle(
               color: Colors.grey,
@@ -85,30 +83,15 @@ class _CustomDateSelectionState extends State<CustomDateSelection> {
               fontWeight: FontWeight.w400,
             ),
             filled: true,
-            suffixIcon: widget.isIconed
-                ? widget.icon
-                : IconButton(
-                    icon: Icon(
-                      Icons.calendar_today,
-                      color: Color(0xFF2c82a7),
-                    ),
-                    onPressed: () {
-                      // Open date picker on icon click
-                      _selectDate(context);
-                    },
-                  ),
             fillColor: widget.backgroundColor,
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(
-                  20), // Border radius similar to CustomTextFieldV2
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 15,
+              horizontal: 10,
             ),
+            prefixIcon: widget.isIconed ? widget.icon : null,
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(
-                color: widget.focusedBorderColor,
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: Colors.transparent, width: 0),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
@@ -118,21 +101,5 @@ class _CustomDateSelectionState extends State<CustomDateSelection> {
         ),
       ),
     );
-  }
-
-  // Function to open date picker dialog
-  Future<void> _selectDate(BuildContext context) async {
-    final pickedDate = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-    );
-    if (pickedDate != null) {
-      setState(() {
-        _selectedDate = pickedDate;
-      });
-      widget.onDateSelected(pickedDate);
-    }
   }
 }
