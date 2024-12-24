@@ -329,4 +329,27 @@ class AuthService {
       return []; // Return an empty list if there's an error
     }
   }
+  Future<int> getNumberOfPatientsForCurrentUser() async {
+    final patients = await getPatientsByCurrentUserUID();
+    return patients.length;
+  }
+  Future<int> getNumberOfFemalePatients() async {
+    final patients = await getPatientsByCurrentUserUID();
+    return patients.where((patient) => patient['gender']?.toLowerCase() == 'female').length;
+  }
+
+  Future<int> getNumberOfMalePatients() async {
+    final patients = await getPatientsByCurrentUserUID();
+    return patients.where((patient) => patient['gender']?.toLowerCase() == 'male').length;
+  }
+
+  Future<double> getAverageAgeOfPatients() async {
+    final patients = await getPatientsByCurrentUserUID();
+    if (patients.isEmpty) return 0.0;
+
+    final totalAge = patients.fold<int>(
+        0, (sum, patient) => sum + (patient['age'] as int? ?? 0));
+    return totalAge / patients.length;
+  }
+
 }
