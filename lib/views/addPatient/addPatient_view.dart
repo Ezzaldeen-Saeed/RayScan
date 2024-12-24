@@ -247,6 +247,8 @@ class _AddPatientViewState extends State<AddPatientView> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // for testing purposes
+              DiagnosisSelector(),
               // First Name
               Align(
                 alignment: Alignment.centerLeft,

@@ -34,6 +34,7 @@ class CustomToggleButtons extends StatelessWidget {
       const BoxConstraints(minWidth: 120, minHeight: 40);
   final BoxConstraints constraints2 =
       const BoxConstraints(minWidth: 100, minHeight: 25);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -56,7 +57,11 @@ class CustomToggleButtons extends StatelessWidget {
                     : null,
                 constraints: type == 1 ? constraints1 : constraints2,
                 decoration: BoxDecoration(
-                  color: isSelected[index] ? fillColor : unselectedButton,
+                  color: isSelected[index]
+                      ? (labels[index] == "Female" ? Colors.pink : fillColor)
+                      : (labels[index] == "Female"
+                          ? Color(0xFFF1A5BD)
+                          : unselectedButton),
                   borderRadius: borderRadius,
                   border: Border.all(
                     color: borderColor,
@@ -67,7 +72,11 @@ class CustomToggleButtons extends StatelessWidget {
                   child: Text(
                     labels[index],
                     style: TextStyle(
-                      color: isSelected[index] ? selectedColor : fillColor,
+                      color: isSelected[index]
+                          ? selectedColor
+                          : labels[index] == "Female"
+                              ? Colors.white
+                              : fillColor,
                       fontSize: type == 1 ? 16 : 14,
                       fontWeight: FontWeight.w600,
                     ),

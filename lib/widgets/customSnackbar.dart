@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:testnav/auth/auth_service.dart';
+import 'package:testnav/widgets/pallet.dart';
 
 class CustomSnackbar {
   final String title;
@@ -77,7 +78,7 @@ class CustomSnackbar {
           if (icon != null) ...[
             Icon(
               icon,
-              color: Colors.white,
+              color: primaryColor,
             ),
             const SizedBox(width: 10),
           ],
@@ -85,7 +86,7 @@ class CustomSnackbar {
             child: Text(
               title,
               style: const TextStyle(
-                color: Colors.white,
+                color: primaryColor,
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
