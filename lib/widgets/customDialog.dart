@@ -171,6 +171,9 @@ class _DiagnosisCustomDialogState extends State<DiagnosisCustomDialog> {
 
       String ID = await widget.PID;
       int newId = await _auth.getNewID(ID);
+      log.i("ID : $newId");
+
+
 
       String filePath = _selectedImage!.path;
       String fileExtension = filePath.split('.').last;

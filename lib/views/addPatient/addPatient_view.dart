@@ -216,6 +216,7 @@ class _AddPatientViewState extends State<AddPatientView> {
           _responseMessage = "Upload failed: ${streamedResponse.statusCode}";
         });
         log.e("Upload failed: ${streamedResponse.statusCode}");
+        _auth.deletePatient(await pid);
       }
     } catch (e) {
       setState(() {

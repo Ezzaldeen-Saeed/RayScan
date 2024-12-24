@@ -29,6 +29,7 @@ class _MainWrapperState extends State<MainWrapper>
   int selectedIndex = 1;
   String statusText = 'Checking connectivity...';
   Color statusColor = Colors.transparent;
+  BuildContext? _dialogContext; // Keep track of dialog context
 
   @override
   void initState() {
@@ -59,6 +60,12 @@ class _MainWrapperState extends State<MainWrapper>
     bool hasInternet = await _hasInternetConnection();
 
     if (hasInternet) {
+      // Dismiss the popup if it's still displayed
+      if (_dialogContext != null) {
+        Navigator.of(_dialogContext!).pop();
+        _dialogContext = null; // Reset dialog context
+      }
+
       switch (result) {
         case ConnectivityResult.mobile:
           setState(() {
@@ -82,8 +89,12 @@ class _MainWrapperState extends State<MainWrapper>
       setState(() {
         statusText = 'No Internet Connection';
         statusColor = Colors.red;
-        _showStyledAlert(context);
       });
+
+      if (_dialogContext == null) {
+        // Show the popup only if not already displayed
+        _showStyledAlert(context);
+      }
     }
   }
 
@@ -114,32 +125,37 @@ class _MainWrapperState extends State<MainWrapper>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (dialogContext) {
+        // Track dialog context
+        _dialogContext = dialogContext;
+
         return CustomDialog(
           title: "No Internet Connection",
           continueButtonChild: const Text("Continue Without Internet",
               style: TextStyle(color: Colors.white)),
           animation: _animation,
           onContinue: () {
-            Navigator.of(context).pop();
+            Navigator.of(dialogContext).pop();
+            _dialogContext = null; // Reset dialog context
           },
           hasHint: true,
           onHintTap: () {
             showDialog(
-              context: context,
-              builder: (context) {
+              context: dialogContext,
+              builder: (hintContext) {
                 return CustomDialog(
-                    title:
-                        "Some Features May Not Work Like:\nAdding Patient, Searching, Modifying, Deleting, etc.",
-                    continueButtonChild:
-                        const Icon(Icons.check, color: Colors.white),
-                    onContinue: () {
-                      Navigator.of(context).pop();
-                    },
-                    hasHint: false,
-                    onHintTap: () {},
-                    backgroundColor: infoAlertDialogBg,
-                    fontColor: infoAlertDialogFont);
+                  title:
+                  "Some Features May Not Work Like:\nAdding Patient, Searching, Modifying, Deleting, etc.",
+                  continueButtonChild:
+                  const Icon(Icons.check, color: Colors.white),
+                  onContinue: () {
+                    Navigator.of(hintContext).pop();
+                  },
+                  hasHint: false,
+                  onHintTap: () {},
+                  backgroundColor: infoAlertDialogBg,
+                  fontColor: infoAlertDialogFont,
+                );
               },
             );
           },
