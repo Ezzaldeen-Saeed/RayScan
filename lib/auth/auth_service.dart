@@ -1,8 +1,8 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:logger/logger.dart';
 
 // EZZ
 // https://concrete-grub-immensely.ngrok-free.app
@@ -20,7 +20,6 @@ final String ngrokAuthKey = "2pMS326VkCAcdJvvQsNGyAJbJSq_7oKjcn4FoEvS5ersmd5Ch";
 class AuthService {
   final _auth = FirebaseAuth.instance;
   final _firestore = FirebaseFirestore.instance;
-  final Logger log = Logger();
 
   Future<User?> createUserWithEmailAndPassword(
       String fName, String lName, String email, String password) async {
@@ -36,10 +35,10 @@ class AuthService {
           .doc(userId)
           .set({'fName': fName, 'lName': lName});
 
-      log.i("User registered and data saved successfully.");
+      log("User registered and data saved successfully.");
       return cred.user;
     } catch (e) {
-      log.e("Error in createUserWithEmailAndPassword: $e, Type: ${e.runtimeType}");
+      log("Error in createUserWithEmailAndPassword: $e, Type: ${e.runtimeType}");
     }
     return null;
   }
@@ -51,7 +50,7 @@ class AuthService {
           email: email, password: password);
       return cred.user;
     } catch (e) {
-      log.e("Error in loginUserWithEmailAndPassword: $e, Type: ${e.runtimeType}");
+      log("Error in loginUserWithEmailAndPassword: $e, Type: ${e.runtimeType}");
     }
     return null;
   }
@@ -61,7 +60,7 @@ class AuthService {
       final user = _auth.currentUser;
       if (user != null) {
         final doc = await _firestore.collection('Users').doc(user.uid).get();
-        log.i("UserID: ${user.uid}, Requested Current User's Data.");
+        log("UserID: ${user.uid}, Requested Current User's Data.");
         return {
           'userFirstName': doc['fName'],
           'userLastName': doc['lName'],
@@ -69,11 +68,12 @@ class AuthService {
         };
       }
     } catch (e) {
-      log.e("Error in getCurrentUserName: $e, Type: ${e.runtimeType}");
+      log("Error in getCurrentUserName: $e, Type: ${e.runtimeType}");
     }
     return {};
   }
 
+  //this method is for changing the password of the user by sending the current password and the new password
   Future<bool> changePassword(
       String currentPassword, String newPassword) async {
     try {
@@ -83,11 +83,11 @@ class AuthService {
             email: user.email!, password: currentPassword);
         await user.reauthenticateWithCredential(cred);
         await user.updatePassword(newPassword);
-        log.i("Password changed successfully.");
+        log("Password changed successfully.");
         return true;
       }
     } catch (e) {
-      log.e("Error in changePassword: $e, Type: ${e.runtimeType}");
+      log("Error in changePassword: $e, Type: ${e.runtimeType}");
     }
     return false;
   }
@@ -96,7 +96,7 @@ class AuthService {
     try {
       await _auth.signOut();
     } catch (e) {
-      log.e("Error in signout: $e, Type: ${e.runtimeType}");
+      log("Error in signout: $e, Type: ${e.runtimeType}");
     }
   }
 
@@ -111,7 +111,7 @@ class AuthService {
         await user.updateEmail(email);
       }
     } catch (e) {
-      log.e("Error in updateProfileData: $e, Type: ${e.runtimeType}");
+      log("Error in updateProfileData: $e, Type: ${e.runtimeType}");
     }
   }
 
@@ -125,7 +125,7 @@ class AuthService {
             .where('UID', isEqualTo: user.uid)
             .get();
 
-        log.i("Fetching patients for UID: ${user.uid}");
+        log("Fetching patients for UID: ${user.uid}");
 
         // Map each document to a list of patient data
         return querySnapshot.docs.map((doc) {
@@ -141,10 +141,10 @@ class AuthService {
           };
         }).toList();
       } else {
-        log.i("No user is logged in.");
+        log("No user is logged in.");
       }
     } catch (e) {
-      log.e("Error in getPatientsByCurrentUserUID: $e, Type: ${e.runtimeType}");
+      log("Error in getPatientsByCurrentUserUID: $e, Type: ${e.runtimeType}");
     }
     return [];
   }
@@ -160,7 +160,7 @@ class AuthService {
             .where('PID', isEqualTo: PID)
             .get();
 
-        log.i("Fetching patients Diagnosis with PID: $PID");
+        log("Fetching patients Diagnosis with PID: $PID");
 
         // Map each document to a list of patient data
         return querySnapshot.docs.map((doc) {
@@ -174,10 +174,10 @@ class AuthService {
           };
         }).toList();
       } else {
-        log.i("No user is logged in.");
+        log("No user is logged in.");
       }
     } catch (e) {
-      log.e("Error in getPatientDiagnosisByPID: $e, Type: ${e.runtimeType}");
+      log("Error in getPatientDiagnosisByPID: $e, Type: ${e.runtimeType}");
     }
     return [];
   }
@@ -191,7 +191,7 @@ class AuthService {
       final diagnosis = await getPatientDiagnosisByPatientPID(patient['id']);
       return {'patient': patient, 'diagnosis': diagnosis};
     }));
-    log.i("Full Details: $fullDetails");
+    log("Full Details: $fullDetails");
     return fullDetails;
   }
 
@@ -214,10 +214,10 @@ class AuthService {
 
       // Add the patient data
       await newPatientRef.set(patientData);
-      log.i('Added new patient: ${newPatientRef.id}');
+      log('Added new patient: ${newPatientRef.id}');
       return newPatientRef.id;
     } catch (e) {
-      log.e('Error adding new patient: $e');
+      log('Error adding new patient: $e');
     }
     return "";
   }
@@ -226,21 +226,20 @@ class AuthService {
     // Fetch the largest ID for the given PID
     final querySnapshot = await _firestore
         .collection('Diagnosis')
-        .where('PID', isEqualTo: PID) // Ensure correct variable is used
+        .where('PID', isEqualTo: pid)
         .get();
 
     int maxId = 0;
     for (var doc in querySnapshot.docs) {
-      // Safely extract and parse the 'id' field
-      final docId = doc.data()['id'] as int? ?? 0;
-      if (docId > maxId) {
+      final docId = doc.data()['id'];
+      if (docId is int && docId > maxId) {
         maxId = docId;
       }
     }
 
-    return maxId + 1; // Increment the max ID
+    final newId = maxId + 1;
+    return newId;
   }
-
 
   Future<void> addDiagnosis(List<Map<String, dynamic>>? diagnosisList) async {
     try {
@@ -266,20 +265,20 @@ class AuthService {
 
         // Add data to Firestore
         await diagnosisRef.set(diagnosisData);
-        log.i('Added diagnosis with ID: $newId for patient: $pid');
+        log('Added diagnosis with ID: $newId for patient: $pid');
       }
     } catch (e, stackTrace) {
-      log.e('Error adding diagnosis: $e');
-      log.e('Stack trace: $stackTrace');
+      log('Error adding diagnosis: $e');
+      log('Stack trace: $stackTrace');
     }
   }
 
   Future<void> deletePatient(String patientId) async {
     try {
       await _firestore.collection('Patients').doc(patientId).delete();
-      log.i('Deleted patient: $patientId');
+      log('Deleted patient: $patientId');
     } catch (e) {
-      log.e('Error deleting patient: $e');
+      log('Error deleting patient: $e');
     }
   }
 
@@ -296,37 +295,12 @@ class AuthService {
         };
 
         await feedbackRef.set(feedbackData);
-        log.i('Feedback submitted: ${feedbackRef.id}');
+        log('Feedback submitted: ${feedbackRef.id}');
         return true;
       }
     } catch (e) {
-      log.e('Error in feedback: $e');
+      log('Error in feedback: $e');
     }
     return false;
-  }
-
-  Future<List<Map<String, dynamic>>> fetchDiagnoses(String PID) async {
-    try {
-      // Query Firestore for diagnoses matching the given PID
-      final querySnapshot = await _firestore
-          .collection('Diagnosis')
-          .where('PID', isEqualTo: PID)
-          .orderBy('Diagnosis_Date', descending: true) // Optional: Order by date
-          .get();
-
-      // Extract and return the data as a list of maps
-      final diagnoses = querySnapshot.docs.map((doc) {
-        return {
-          ...doc.data(), // Include the document data
-          'docId': doc.id // Optionally include the document ID
-        } as Map<String, dynamic>;
-      }).toList();
-
-      return diagnoses;
-    } catch (e, stackTrace) {
-      log.e('Error fetching diagnoses for PID $PID: $e');
-      log.e('Stack trace: $stackTrace');
-      return []; // Return an empty list if there's an error
-    }
   }
 }

@@ -1,4 +1,3 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:testnav/widgets/textfield.dart';
@@ -12,6 +11,8 @@ class forgetPass_view extends StatefulWidget {
 
 class _ForgetPassViewState extends State<forgetPass_view> {
   final TextEditingController _emailController = TextEditingController();
+  bool _isSendingResetLink = false;
+
   String _message = '';
   Color _messageColor = Colors.black;
 
@@ -19,52 +20,95 @@ class _ForgetPassViewState extends State<forgetPass_view> {
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      setState(() {
-        _message = "Please enter your email.";
-        _messageColor = Colors.red;
-      });
+      _showSnackbar(
+        "Please enter your email.",
+        Colors.orange,
+        icon: Icons.warning,
+      );
       return;
     }
 
-    if (!EmailValidator.validate(email)) {
-      setState(() {
-        _message =
-            "Invalid email format. Please enter a valid email (e.g., example@domain.com).";
-        _messageColor = Colors.red;
-      });
+    if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+        .hasMatch(email)) {
+      _showSnackbar(
+        "Invalid email format. Please enter a valid email (e.g., example@domain.com).",
+        Colors.red,
+        icon: Icons.error,
+      );
       return;
     }
+
+    setState(() {
+      _isSendingResetLink = true;
+    });
 
     try {
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
-      setState(() {
-        _message = "A reset link has been sent to $email.";
-        _messageColor = Colors.green;
-      });
+      _showSnackbar(
+        "A reset link has been sent to $email.",
+        Colors.green,
+        icon: Icons.check_circle,
+      );
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        setState(() {
-          _message = "No account found for this email.";
-          _messageColor = Colors.red;
-        });
+        _showSnackbar(
+          "No account found for this email.",
+          Colors.red,
+          icon: Icons.error_outline,
+        );
       } else if (e.code == 'too-many-requests') {
-        setState(() {
-          _message = "Too many attempts. Please try again later.";
-          _messageColor = Colors.red;
-        });
+        _showSnackbar(
+          "Too many attempts. Please try again later.",
+          Colors.orange,
+          icon: Icons.timer,
+        );
       } else {
-        setState(() {
-          _message = e.message ?? "An error occurred. Please try again.";
-          _messageColor = Colors.red;
-        });
+        _showSnackbar(
+          e.message ?? "An error occurred. Please try again.",
+          Colors.red,
+          icon: Icons.error,
+        );
       }
     } catch (e) {
+      _showSnackbar(
+        "An unexpected error occurred. Please check your connection and try again.",
+        Colors.red,
+        icon: Icons.wifi_off,
+      );
+    } finally {
       setState(() {
-        _message =
-            "An unexpected error occurred. Please check your connection and try again.";
-        _messageColor = Colors.red;
+        _isSendingResetLink = false;
       });
     }
+  }
+
+  void _showSnackbar(String message, Color backgroundColor, {IconData? icon}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            if (icon != null)
+              Icon(icon, color: Colors.white, size: 20), // Icon for the message
+            SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(color: Colors.white, fontSize: 16),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        backgroundColor: backgroundColor,
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        duration: Duration(seconds: 3),
+      ),
+    );
   }
 
   @override

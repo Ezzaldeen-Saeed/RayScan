@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/utils/utility.dart';
-import 'package:testnav/widgets/customSnackbar.dart';
 import 'package:testnav/widgets/textfield.dart';
 
 class SignupView extends StatefulWidget {
@@ -46,43 +45,131 @@ class _SignupViewState extends State<SignupView>
   }
 
   Future<void> _handleSignup() async {
+    if (_firstName.text.trim().isEmpty) {
+      _showSnackbar("First name is required", Colors.orange,
+          icon: Icons.warning);
+      return;
+    }
+
+    if (!RegExp(r"^[A-Za-z][A-Za-z\s]{2,}$").hasMatch(_firstName.text.trim())) {
+      _showSnackbar(
+          "First name must have at least 3 characters and cannot start with a number.",
+          Colors.orange,
+          icon: Icons.warning);
+      return;
+    }
+
+    if (_lastName.text.trim().isEmpty) {
+      _showSnackbar("Last name is required", Colors.orange,
+          icon: Icons.warning);
+      return;
+    }
+
+    if (!RegExp(r"^[A-Za-z][A-Za-z\s]{2,}$").hasMatch(_lastName.text.trim())) {
+      _showSnackbar(
+          "Last name must have at least 3 characters and cannot start with a number.",
+          Colors.orange,
+          icon: Icons.warning);
+      return;
+    }
+
+    if (_email.text.trim().isEmpty) {
+      _showSnackbar("Email is required", Colors.orange, icon: Icons.warning);
+      return;
+    }
+
+    if (!RegExp(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
+        .hasMatch(_email.text.trim())) {
+      _showSnackbar("Please enter a valid email", Colors.orange,
+          icon: Icons.warning);
+      return;
+    }
+
+    if (_password.text.trim().isEmpty) {
+      _showSnackbar("Password is required", Colors.orange, icon: Icons.warning);
+      return;
+    }
+
+    if (!RegExp(
+            r"^(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*\-_])[A-Za-z\d!@#\$%\^&\*\-_]{8,}$")
+        .hasMatch(_password.text.trim())) {
+      _showSnackbar(
+        "Password must be at least 8 characters long, include a number, an uppercase letter, and a special character.",
+        Colors.orange,
+        icon: Icons.warning,
+      );
+      print("Password entered: ${_password.text.trim()}");
+
+      return;
+    }
+
     setState(() {
       _isSigningUp = true;
     });
 
-    final success = await signupLogin.signup(
-      context,
-      _firstName.text.trim(),
-      _lastName.text.trim(),
-      _email.text.trim(),
-      _password.text.trim(),
-    );
+    try {
+      final success = await signupLogin.signup(
+        context,
+        _firstName.text.trim(),
+        _lastName.text.trim(),
+        _email.text.trim(),
+        _password.text.trim(),
+      );
 
-    setState(() {
-      _isSigningUp = false;
-    });
-
-    if (!success) {
-      CustomSnackbar(
-        title: 'Signup failed. Please try again.',
-        actionLabel: "Retry",
-        backgroundColor: Colors.red,
-        fontColor: Colors.white,
-        hasAction: true,
-        onPressAction: _handleSignup,
-      ).show(context);
-    } else {
-      CustomSnackbar(
-        title: 'Signup Successful',
-        actionLabel: "Go to Login",
-        backgroundColor: Colors.green,
-        fontColor: Colors.white,
-        hasAction: true,
-        onPressAction: () {
-          context.go('/login');
-        },
-      ).show(context);
+      if (!success) {
+        _showSnackbar("Signup failed. Please try again.", Colors.red,
+            icon: Icons.error);
+      } else {
+        _showSnackbar("Signup Successful", Colors.green,
+            icon: Icons.check_circle);
+        context.go('/login');
+      }
+    } catch (e) {
+      print("Error during signup: $e");
+      _showSnackbar(
+          "An unexpected error occurred. Please try again.", Colors.red,
+          icon: Icons.error_outline);
+    } finally {
+      setState(() {
+        _isSigningUp = false;
+      });
     }
+  }
+
+// دالة لعرض Snackbar محسّن
+  void _showSnackbar(String message, Color backgroundColor, {IconData? icon}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        backgroundColor: backgroundColor,
+        duration: Duration(seconds: 3),
+        content: Row(
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                color: Colors.white,
+              ),
+              SizedBox(width: 10),
+            ],
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
