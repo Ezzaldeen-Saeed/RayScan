@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:testnav/utils/utility.dart';
 import 'package:testnav/views/signup_login/forgetPass_view.dart';
-import 'package:testnav/widgets/customSnackbar.dart';
-import 'package:testnav/widgets/pallet.dart';
 import 'package:testnav/widgets/textfield.dart';
 
 class LoginView extends StatefulWidget {
@@ -47,7 +45,35 @@ class _LoginViewState extends State<LoginView>
     _password.text = "test1234";
   }
 
+  int _loginAttempts = 0;
+  bool _isBlocked = false;
+  DateTime? _blockEndTime;
+
   Future<void> _handleLogin() async {
+    if (_isBlocked && _blockEndTime != null) {
+      final remainingTime = _blockEndTime!.difference(DateTime.now());
+      if (!remainingTime.isNegative) {
+        _showSnackbar(
+          "Too many attempts. Try again in ${remainingTime.inSeconds} seconds.",
+          Colors.red,
+          icon: Icons.timer,
+        );
+        return;
+      } else {
+        _isBlocked = false;
+        _loginAttempts = 0;
+      }
+    }
+
+    if (_email.text.trim().isEmpty || _password.text.trim().isEmpty) {
+      _showSnackbar(
+        "Please fill all fields",
+        Colors.orange,
+        icon: Icons.warning,
+      );
+      return;
+    }
+
     setState(() {
       _isLoggingIn = true;
     });
@@ -60,41 +86,110 @@ class _LoginViewState extends State<LoginView>
       );
 
       if (!success) {
-        CustomSnackbar(
-          title: 'Login failed. Please try again.',
-          actionLabel: "Retry",
-          backgroundColor: Colors.red,
-          fontColor: Colors.white,
-          hasAction: true,
-          onPressAction: () {
-            _handleLogin();
-          },
-        ).showUndo(context, 'patientId');
+        _loginAttempts++;
+        if (_loginAttempts >= 3) {
+          _isBlocked = true;
+          _blockEndTime = DateTime.now().add(Duration(seconds: 30));
+          _showSnackbar(
+            "Too many failed attempts. Please wait 30 seconds before trying again.",
+            Colors.red,
+            icon: Icons.lock,
+          );
+          return;
+        }
+        _showSnackbar(
+          "Invalid email or password",
+          Colors.red,
+          icon: Icons.error,
+        );
       } else {
-        CustomSnackbar(
-          title: 'Login Successful',
-          actionLabel: "Go to Home",
-          backgroundColor: Colors.green,
-          fontColor: Colors.white,
-          hasAction: true,
-          onPressAction: () {
-            context.go('/home');
-          },
-        ).show(context);
+        _loginAttempts = 0;
+        _showSnackbar(
+          "Login Successful",
+          Colors.green,
+          icon: Icons.check_circle,
+        );
+        context.go('/home');
       }
     } catch (e) {
       print("Error during login: $e");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("An unexpected error occurred. Please try again."),
-          backgroundColor: errorSnackBarBG,
-        ),
+      _showSnackbar(
+        "An unexpected error occurred. Please try again!!!!!!!.",
+        Colors.red,
+        icon: Icons.error_outline,
       );
     } finally {
       setState(() {
         _isLoggingIn = false;
       });
     }
+  }
+
+  void _showSnackbar(String message, Color backgroundColor, {IconData? icon}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        backgroundColor: backgroundColor,
+        duration: Duration(seconds: 3),
+        content: Row(
+          children: [
+            if (icon != null) ...[
+              Icon(
+                icon,
+                color: Colors.white,
+              ),
+              SizedBox(width: 10),
+            ],
+            Expanded(
+              child: Text(
+                message,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+// دالة لعرض SnackBar مخصصة بحجم ثابت وتصميم أفضل
+  void _showCustomSnackBar(
+      {required String message, required Color backgroundColor}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Container(
+          height: 80, // تثبيت حجم الـ SnackBar
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: backgroundColor,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            message,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        behavior: SnackBarBehavior.floating,
+        // يجعل الـ SnackBar يظهر بشكل عائم
+        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        backgroundColor: Colors.transparent,
+        // شفافية الخلفية لتظهر الحاوية فقط
+        duration: Duration(seconds: 3),
+      ),
+    );
   }
 
   @override
