@@ -33,7 +33,6 @@ class PatientProfileCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Convert Firestore Timestamp to readable date format
     final String formattedBirthDate =
         "${birthDate.toDate().day}/${birthDate.toDate().month}/${birthDate.toDate().year}";
 

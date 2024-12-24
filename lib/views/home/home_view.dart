@@ -1,80 +1,157 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:testnav/auth/auth_service.dart';
-import 'package:testnav/main.dart';
 import 'package:testnav/utils/Utility.dart';
 import 'package:testnav/widgets/miniProfileCard.dart';
 
-class HomeView extends StatelessWidget {
-  final AuthService auth = AuthService();
+import '../../widgets/pallet.dart';
 
-  final SignUpAndLogin signupLogin = SignUpAndLogin();
+class HomeView extends StatefulWidget {
+  @override
+  _HomeViewState createState() => _HomeViewState();
+}
+
+class _HomeViewState extends State<HomeView> {
+  final AuthService auth = AuthService();
+  final String formattedDate = DateFormat('dd MMMM yyyy').format(DateTime.now());
+
+  int numberOfPatients = 0;
+  int numberOfMalePatients = 0;
+  int numberOfFemalePatients = 0;
+  double averageAge = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPatientData();
+  }
+
+  Future<void> _fetchPatientData() async {
+    final patients = await auth.getNumberOfPatientsForCurrentUser();
+    final males = await auth.getNumberOfMalePatients();
+    final females = await auth.getNumberOfFemalePatients();
+    final avgAge = await auth.getAverageAgeOfPatients();
+
+    setState(() {
+      numberOfPatients = patients;
+      numberOfMalePatients = males;
+      numberOfFemalePatients = females;
+      averageAge = avgAge;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: currentBG,
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              Container(
-                height: 150,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF2F80ED), Color(0xFFB2FFDA)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            MiniProfileCard(onPressed: () {}),
+            // Add padding to elements beneath MiniProfileCard
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    formattedDate,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: 20),
+                ],
               ),
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  //make the color gradiant
-                  gradient: LinearGradient(
-                    colors: [Color(0xFF4898e9), Color(0xFFb1feda)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(200.0),
-                    bottomRight: Radius.circular(200.0),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Align(
-            alignment: Alignment.center,
-            child: ListView(
-              children: [
-                MiniProfileCard(onPressed: () {
-                  GoRouter.of(context).go('/profile');
-                }),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Latest Patient:',
-                        style: TextStyle(
-                          color: currentTextColor,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 10),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
             ),
-          ),
-        ],
+            // GridView for displaying data
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 1.6,
+                  ),
+                  itemCount: 4,
+                  itemBuilder: (context, index) {
+                    final colors = [
+                      [Colors.redAccent, Colors.red],
+                      [Colors.purpleAccent, Colors.purple],
+                      [Colors.blueAccent, Colors.blue],
+                      [Colors.greenAccent, Colors.green],
+                    ];
+                    final data = [
+                      '$numberOfPatients Patients',
+                      '$numberOfMalePatients Males',
+                      '$numberOfFemalePatients Females',
+                      'Avg Age: ${averageAge.toStringAsFixed(1)}',
+                    ];
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: colors[index],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Stack(
+                        children: [
+                          Positioned(
+                            top: -30,
+                            right: -20,
+                            child: Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            bottom: -20,
+                            left: -30,
+                            child: Container(
+                              width: 120,
+                              height: 120,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                          Center(
+                            child: Text(
+                              data[index],
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Center(child: Image.asset("assets/others/img.png" , width: 220,)),
+            const SizedBox(height: 50),
+          ],
+        ),
       ),
     );
   }

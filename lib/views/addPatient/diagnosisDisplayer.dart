@@ -71,9 +71,13 @@ class _Diagnosisdisplayer_subViewState
       if (predictions != null) {
         fracturePlace = predictions["bone_type"];
         fractureStatus = predictions["fracture_status"];
-        // fractureStatus == "fractured"
-        // ?
-        // :  ,
+        Map<String, dynamic> diagnosisData = {
+          'PID': widget.data?["PID"],
+          'Diagnosis': predictions,
+          'label': fracturePlace,
+          'ModelType': modelType,
+        };
+        _auth.addDiagnosis([diagnosisData]);
       }
     }
   }
