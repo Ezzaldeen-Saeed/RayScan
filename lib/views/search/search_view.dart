@@ -203,12 +203,7 @@ class _SearchViewState extends State<SearchView> {
                 child: isLoading
                     ? const Center(
                         child: CircularProgressIndicator()) // Show loader
-                    : filteredPatients.isEmpty
-                        ? const Center(
-                            child: Text("404",
-                                style: TextStyle(
-                                    color: textFieldBGColor, fontSize: 100)))
-                        : PatientList(patients: filteredPatients),
+                    : PatientList(patients: filteredPatients),
               ),
             )
           ],

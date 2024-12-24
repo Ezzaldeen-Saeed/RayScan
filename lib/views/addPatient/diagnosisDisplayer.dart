@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:testnav/auth/auth_service.dart';
-import 'package:testnav/utils/Utility.dart';
+import 'package:testnav/utils/utility.dart';
 import 'package:testnav/widgets/customDialog.dart';
 import 'package:testnav/widgets/customSnackbar.dart';
 import 'package:testnav/widgets/incrementingAnimation.dart';

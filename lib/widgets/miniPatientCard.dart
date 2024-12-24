@@ -160,7 +160,7 @@ class PatientProfileCard extends StatelessWidget {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text('Birth Date: $formattedBirthDate'),
+                        child: Text('Age: $age'),
                       ),
                     ),
                   ],

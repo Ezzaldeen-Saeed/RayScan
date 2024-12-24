@@ -19,6 +19,7 @@ import 'package:testnav/views/signup_login/login_view.dart';
 import 'package:testnav/views/signup_login/signup_view.dart';
 import 'package:testnav/views/wrapper/main_wrapper.dart';
 
+
 // Pages Names
 //  - /login
 //  - /signup
@@ -202,34 +203,31 @@ class AppNavigation {
                 path: '/search',
                 name: "Search",
                 builder: (BuildContext context, GoRouterState state) =>
-                    const SearchView(),
+                const SearchView(),
                 routes: [
                   // Patient Profile Subview
                   GoRoute(
                     path: "patientProfile_subview",
                     name: "patient Profile Page",
                     pageBuilder: (context, state) {
-                      // Pass the state to the widget
                       return CustomTransitionPage<void>(
                         key: state.pageKey,
                         child: patientProfile_subview(
-                          data: state.extra
-                              as Map<String, dynamic>?, // Pass the extra data
+                          data: state.extra as Map<String, dynamic>?, // Pass the extra data
                         ),
                         transitionsBuilder: (
-                          context,
-                          animation,
-                          secondaryAnimation,
-                          child,
-                        ) =>
-                            FadeUpwardsPageTransitionsBuilder()
-                                .buildTransitions(
-                          null,
-                          context,
-                          animation,
-                          secondaryAnimation,
-                          child,
-                        ),
+                            context,
+                            animation,
+                            secondaryAnimation,
+                            child,
+                            ) =>
+                            FadeUpwardsPageTransitionsBuilder().buildTransitions(
+                              null,
+                              context,
+                              animation,
+                              secondaryAnimation,
+                              child,
+                            ),
                       );
                     },
                   ),
@@ -237,7 +235,6 @@ class AppNavigation {
               ),
             ],
           ),
-
           /// Branch Profile
           StatefulShellBranch(
             navigatorKey: _shellNavigatorProfile,

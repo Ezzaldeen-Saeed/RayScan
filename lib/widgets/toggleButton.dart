@@ -68,7 +68,7 @@ class CustomToggleButtons extends StatelessWidget {
                     labels[index],
                     style: TextStyle(
                       color: isSelected[index] ? selectedColor : fillColor,
-                      fontSize: type == 1 ? 16 : 12,
+                      fontSize: type == 1 ? 16 : 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

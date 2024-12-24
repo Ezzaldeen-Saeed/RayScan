@@ -25,9 +25,10 @@ class PatientList extends StatelessWidget {
         // Build the diagnosis summary
         final diagnosisSummary = diagnosis.isNotEmpty
             ? diagnosis
-                .map((diag) => (diag as Map<String, dynamic>)['label'] ?? '')
-                .where((diag) => diag.isNotEmpty) // Filter out empty diagnoses
-                .join(', ')
+            .map((diag) => (diag as Map<String, dynamic>)['label'] ?? '')
+            .where((diag) => diag.isNotEmpty) // Filter out empty diagnoses
+            .toSet() // Convert to a Set to ensure uniqueness
+            .join(', ') // Convert back to a comma-separated string
             : 'No diagnosis available';
 
         // Build the patient profile card
