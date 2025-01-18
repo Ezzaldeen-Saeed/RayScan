@@ -1,16 +1,74 @@
-# testnav
+# RayScan - Mobile X-Ray Diagnostic App
 
-A new Flutter project.
+## Overview
+
+RayScan is a mobile application that leverages advanced machine learning techniques to diagnose chest X-rays and detect bone fractures in the arm region. Designed with **Dart**, this app provides a user-friendly interface for medical professionals and patients to quickly assess and identify abnormalities in X-ray images.
+
+## Features
+
+### Chest X-Ray Diagnosis
+
+RayScan can detect the following diseases in chest X-rays:
+
+- **Atelectasis**
+- **Cardiomegaly**
+- **Fibrosis**
+- **Effusion**
+- **Hernia**
+
+### Bone Fracture Detection
+
+For arm X-rays, the app can:
+
+- Identify fractures
+- Pinpoint the exact part of the arm that is fractured
+
+## Technology Stack
+
+- **Frontend**: Dart (Flutter)
+- **Backend**: TensorFlow/Keras for model training (optional integration)
+- **Deployment**: Compatible with Android and iOS
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+### Prerequisites
 
-A few resources to get you started if this is your first Flutter project:
+Ensure you have the following installed:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Flutter SDK
+- Dart
+- A device or emulator to run the application
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Ezzaldeen-Saeed/RayScan.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd RayScan
+   ```
+3. Install dependencies:
+   ```bash
+   flutter pub get
+   ```
+4. Run the application:
+   ```bash
+   flutter run
+   ```
+
+## Model Weights
+
+The application requires pre-trained model weights to function correctly. Please download the weights from the link below and place them in the `server` directory.
+
+**[Download Model Weights](https://drive.google.com/drive/folders/1xKQhWKL7N9gBCYLYbLwP5RQL4PVKwf3i?usp=sharing)**
+
+
+
+## How It Works
+
+1. Upload an X-ray image through the app.
+2. Choose the type of analysis (Chest or Arm).
+3. Receive a detailed report with detected abnormalities or fractures.
+
