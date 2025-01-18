@@ -64,7 +64,11 @@ The application requires pre-trained model weights to function correctly. Please
 
 **[Download Model Weights](https://drive.google.com/drive/folders/1xKQhWKL7N9gBCYLYbLwP5RQL4PVKwf3i?usp=sharing)**
 
+## Datasets Used
 
+**[Bone Fracture Dataset](https://www.kaggle.com/datasets/pkdarabi/bone-fracture-detection-computer-vision-project?select=bone+fracture+detection.v4-v4.yolov8)**
+
+**[Chest Diseases Dataset](https://www.kaggle.com/datasets/nih-chest-xrays/data/data)**
 
 ## How It Works
 
