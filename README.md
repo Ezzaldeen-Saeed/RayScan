@@ -73,6 +73,6 @@ The application requires pre-trained model weights to function correctly. Please
 ## How It Works
 
 1. Upload an X-ray image through the app.
-2. Choose the type of analysis (Chest or Arm).
+2. Choose the type of analysis (Chest or Fracture).
 3. Receive a detailed report with detected abnormalities or fractures.
 
