@@ -2,7 +2,7 @@
 
 ## Overview
 
-RayScan is a mobile application that leverages advanced machine learning techniques to diagnose chest X-rays and detect bone fractures in the arm region. Designed with **Dart**, this app provides a user-friendly interface for medical professionals and patients to quickly assess and identify abnormalities in X-ray images.
+RayScan is a mobile application that leverages advanced machine learning and deep learning techniques to diagnose chest X-rays and detect bone fractures in the arm region. Designed with **Dart**, this app provides a user-friendly interface for medical professionals and patients to quickly assess and identify abnormalities in X-ray images.
 
 ## Features
 
